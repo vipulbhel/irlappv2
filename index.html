@@ -103,11 +103,8 @@ async function handleContinue(){
   try {
     const data = await callEdge('get-profile', { phone });
     localStorage.setItem('irl_phone', phone);
-    if(data.exists){
-      redirectReturningUser(data.profile);
-    } else {
-      window.location.href = 'otp.html';
-    }
+// always go through OTP regardless of new or returning user
+window.location.href = 'otp.html';
   } catch(err){
     console.error(err);
     showError('Unexpected error. Please try again.');
