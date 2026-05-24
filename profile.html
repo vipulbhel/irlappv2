@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IRL — Setup Your Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D0810;--card:#160F1A;--rose:#E8437A;--rose2:#FF6B9D;
+  --cream:#F5EDE8;--muted:#8A7A82;--muted2:#3A3040;--border:rgba(245,237,232,0.08);
+  --green:#34D399;
+}
+html,body{height:100%;overflow-x:hidden}
+body{
+  background:var(--bg);color:var(--cream);
+  font-family:'DM Sans',sans-serif;
+  min-height:100svh;
+}
+.amb1{position:fixed;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(232,67,122,0.08) 0%,transparent 65%);pointer-events:none;z-index:0}
+.amb2{position:fixed;bottom:-80px;left:-80px;width:300px;height:300px;background:radial-gradient(circle,rgba(120,40,90,0.06) 0%,transparent 65%);pointer-events:none;z-index:0}
+
+/* ── TOP BAR ── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(13,8,16,0.95);
+  backdrop-filter:blur(16px);
+  padding:16px 24px 12px;
+  border-bottom:1px solid var(--border);
+}
+.topbar-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:-0.5px}
+.logo span{color:var(--rose)}
+.step-label{font-size:12px;color:var(--muted);letter-spacing:0.5px}
+
+/* Instagram-style progress bar */
+.progress-bar{display:flex;gap:4px}
+.prog-seg{
+  flex:1;height:3px;border-radius:2px;
+  background:rgba(245,237,232,0.1);
+  overflow:hidden;
+}
+.prog-seg-fill{
+  height:100%;width:0%;
+  background:var(--rose);
+  border-radius:2px;
+  transition:width 0.4s ease;
+}
+.prog-seg.done .prog-seg-fill{width:100%}
+.prog-seg.active .prog-seg-fill{width:100%;animation:progpulse 1.5s ease-in-out infinite alternate}
+@keyframes progpulse{from{opacity:0.7}to{opacity:1}}
+
+/* ── MAIN CONTENT ── */
+.page{
+  min-height:100svh;
+  padding:100px 24px 120px;
+  display:none;
+  animation:fadeup 0.4s ease forwards;
+  position:relative;z-index:1;
+}
+.page.active{display:block}
+
+.page-emoji{font-size:40px;margin-bottom:16px;display:block}
+.page-title{
+  font-family:'Syne',sans-serif;
+  font-size:26px;font-weight:800;
+  letter-spacing:-1px;line-height:1.1;
+  margin-bottom:8px;
+}
+.page-sub{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:32px;font-weight:300}
+.page-sub b{color:var(--cream)}
+
+/* ── INPUTS ── */
+.field{margin-bottom:16px}
+.field-label{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;display:block}
+input[type="text"],input[type="number"],textarea,select{
+  background:rgba(245,237,232,0.04);
+  border:1px solid rgba(245,237,232,0.1);
+  border-radius:13px;padding:16px 18px;
+  font-family:'DM Sans',sans-serif;font-size:15px;color:var(--cream);
+  outline:none;width:100%;-webkit-appearance:none;
+  transition:border-color 0.2s,background 0.2s;
+}
+input::placeholder,textarea::placeholder{color:var(--muted2)}
+input:focus,textarea:focus,select:focus{border-color:rgba(232,67,122,0.5);background:rgba(232,67,122,0.04)}
+select option{background:#160F1A;color:var(--cream)}
+textarea{resize:none;min-height:80px;line-height:1.5}
+
+/* gender pills */
+.gender-row{display:flex;gap:10px}
+.gender-pill{
+  flex:1;padding:14px;
+  border:1.5px solid rgba(245,237,232,0.1);
+  border-radius:13px;
+  background:rgba(245,237,232,0.03);
+  text-align:center;cursor:pointer;
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:700;
+  color:var(--muted);
+  transition:all 0.2s;
+}
+.gender-pill:hover{border-color:rgba(232,67,122,0.3)}
+.gender-pill.selected{
+  border-color:var(--rose);
+  background:rgba(232,67,122,0.1);
+  color:var(--cream);
+}
+
+/* intent pills */
+.intent-row{display:flex;flex-direction:column;gap:10px}
+.intent-pill{
+  padding:18px 20px;
+  border:1.5px solid rgba(245,237,232,0.1);
+  border-radius:14px;
+  background:rgba(245,237,232,0.03);
+  cursor:pointer;
+  transition:all 0.2s;
+  display:flex;align-items:center;gap:14px;
+}
+.intent-pill:hover{border-color:rgba(232,67,122,0.3)}
+.intent-pill.selected{border-color:var(--rose);background:rgba(232,67,122,0.08)}
+.intent-emoji{font-size:24px;flex-shrink:0}
+.intent-label{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--cream);margin-bottom:2px}
+.intent-desc{font-size:12px;color:var(--muted);font-weight:300}
+
+/* ── QUESTIONS ── */
+.q-pool{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.q-item{
+  padding:16px 18px;
+  border:1.5px solid rgba(245,237,232,0.1);
+  border-radius:14px;
+  background:rgba(245,237,232,0.03);
+  cursor:pointer;transition:all 0.2s;
+}
+.q-item:hover{border-color:rgba(232,67,122,0.3)}
+.q-item.selected{border-color:var(--rose);background:rgba(232,67,122,0.08)}
+.q-item.locked{opacity:0.4;cursor:not-allowed}
+.q-text{font-size:14px;color:var(--cream);line-height:1.5;margin-bottom:0}
+.q-item.selected .q-text{margin-bottom:12px}
+.q-answer{
+  display:none;
+  background:rgba(245,237,232,0.04);
+  border:1px solid rgba(245,237,232,0.1);
+  border-radius:10px;padding:12px 14px;
+  font-family:'DM Sans',sans-serif;font-size:14px;color:var(--cream);
+  outline:none;width:100%;resize:none;
+  transition:border-color 0.2s;
+  min-height:60px;line-height:1.5;
+}
+.q-item.selected .q-answer{display:block}
+.q-answer:focus{border-color:rgba(232,67,122,0.4)}
+.q-counter{font-size:11px;color:var(--muted);margin-bottom:12px;letter-spacing:0.5px}
+
+/* ── PHOTOS ── */
+.photo-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:8px}
+.photo-slot{
+  aspect-ratio:3/4;
+  border:1.5px dashed rgba(245,237,232,0.15);
+  border-radius:14px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  cursor:pointer;position:relative;
+  overflow:hidden;
+  background:rgba(245,237,232,0.02);
+  transition:border-color 0.2s,background 0.2s;
+}
+.photo-slot:hover{border-color:rgba(232,67,122,0.4);background:rgba(232,67,122,0.04)}
+.photo-slot.filled{border-style:solid;border-color:rgba(232,67,122,0.3)}
+.photo-slot.mandatory{border-color:rgba(232,67,122,0.3)}
+.slot-icon{font-size:24px;margin-bottom:6px}
+.slot-label{font-size:10px;color:var(--muted);letter-spacing:0.5px;text-align:center;line-height:1.4}
+.slot-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.slot-remove{
+  position:absolute;top:6px;right:6px;
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(13,8,16,0.8);
+  border:none;color:var(--cream);
+  font-size:12px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  z-index:2;
+}
+input[type="file"]{display:none}
+.photo-note{font-size:11px;color:var(--muted2);text-align:center;line-height:1.5}
+.photo-note b{color:var(--muted)}
+
+/* ── VOICE NOTE ── */
+.voice-box{
+  background:rgba(245,237,232,0.03);
+  border:1.5px dashed rgba(245,237,232,0.15);
+  border-radius:20px;padding:32px 24px;
+  text-align:center;margin-bottom:16px;
+  transition:border-color 0.3s;
+}
+.voice-box.recording{border-color:var(--rose);border-style:solid;background:rgba(232,67,122,0.05)}
+.voice-box.done{border-color:var(--green);border-style:solid;background:rgba(52,211,153,0.05)}
+
+.voice-prompt{
+  background:rgba(232,67,122,0.08);border:1px solid rgba(232,67,122,0.2);
+  border-radius:12px;padding:14px 16px;margin-bottom:24px;
+  font-size:14px;color:var(--cream);line-height:1.6;
+  font-style:italic;text-align:left;
+}
+.voice-prompt::before{content:'"';color:var(--rose);font-size:20px;font-style:normal}
+.voice-prompt::after{content:'"';color:var(--rose);font-size:20px;font-style:normal}
+
+.voice-timer{
+  font-family:'Syne',sans-serif;
+  font-size:48px;font-weight:800;
+  letter-spacing:-2px;color:var(--cream);
+  margin-bottom:8px;line-height:1;
+}
+.voice-timer.recording{color:var(--rose);animation:timerpulse 1s infinite}
+@keyframes timerpulse{0%,100%{opacity:1}50%{opacity:0.6}}
+.voice-status{font-size:13px;color:var(--muted);margin-bottom:24px}
+
+.voice-btn{
+  width:72px;height:72px;border-radius:50%;
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;
+  font-size:28px;
+  transition:transform 0.2s,box-shadow 0.2s;
+}
+.voice-btn.idle{background:var(--rose);box-shadow:0 8px 24px rgba(232,67,122,0.4)}
+.voice-btn.recording{background:#C4306A;box-shadow:0 0 0 0 rgba(232,67,122,0.4);animation:sonar 1.5s infinite}
+.voice-btn.done{background:var(--green);box-shadow:0 8px 24px rgba(52,211,153,0.3)}
+.voice-btn:hover{transform:scale(1.05)}
+@keyframes sonar{
+  0%{box-shadow:0 0 0 0 rgba(232,67,122,0.5)}
+  70%{box-shadow:0 0 0 20px rgba(232,67,122,0)}
+  100%{box-shadow:0 0 0 0 rgba(232,67,122,0)}
+}
+
+/* waveform */
+.waveform{display:flex;align-items:center;justify-content:center;gap:3px;height:40px;margin-bottom:16px}
+.wave-bar{
+  width:3px;border-radius:2px;background:var(--rose);
+  animation:wave 1s ease-in-out infinite;
+}
+.wave-bar:nth-child(1){animation-delay:0s;height:8px}
+.wave-bar:nth-child(2){animation-delay:0.1s;height:16px}
+.wave-bar:nth-child(3){animation-delay:0.2s;height:24px}
+.wave-bar:nth-child(4){animation-delay:0.3s;height:32px}
+.wave-bar:nth-child(5){animation-delay:0.4s;height:24px}
+.wave-bar:nth-child(6){animation-delay:0.5s;height:16px}
+.wave-bar:nth-child(7){animation-delay:0.6s;height:8px}
+@keyframes wave{0%,100%{transform:scaleY(0.5);opacity:0.5}50%{transform:scaleY(1);opacity:1}}
+
+.voice-redo{
+  background:none;border:1px solid var(--border);
+  border-radius:100px;padding:8px 18px;
+  font-family:'DM Sans',sans-serif;font-size:12px;
+  color:var(--muted);cursor:pointer;
+  transition:border-color 0.2s;margin:0 auto;display:block;
+}
+.voice-redo:hover{border-color:rgba(245,237,232,0.2)}
+
+/* ── BOTTOM CTA ── */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:rgba(13,8,16,0.95);
+  backdrop-filter:blur(16px);
+  padding:16px 24px;
+  border-top:1px solid var(--border);
+}
+.btn-primary{
+  width:100%;background:linear-gradient(135deg,#E8437A,#C4306A);
+  border:none;border-radius:13px;padding:18px;
+  font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+  color:white;cursor:pointer;
+  transition:transform 0.15s,opacity 0.15s,box-shadow 0.2s;
+  box-shadow:0 8px 28px rgba(232,67,122,0.25);
+  min-height:56px;position:relative;
+}
+.btn-primary:hover:not(:disabled){opacity:0.9;transform:scale(0.998)}
+.btn-primary:active:not(:disabled){transform:scale(0.97)}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-label{display:block}
+.dots-loader{
+  display:none;position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);gap:5px;align-items:center;
+}
+.dots-loader span{display:inline-block;width:7px;height:7px;border-radius:50%;background:white;animation:dotbounce 1.2s infinite ease-in-out}
+.dots-loader span:nth-child(1){animation-delay:0s}
+.dots-loader span:nth-child(2){animation-delay:0.2s}
+.dots-loader span:nth-child(3){animation-delay:0.4s}
+@keyframes dotbounce{0%,80%,100%{transform:scale(0.7);opacity:0.5}40%{transform:scale(1.1);opacity:1}}
+.btn-primary.loading .btn-label{opacity:0}
+.btn-primary.loading .dots-loader{display:flex}
+
+.error-msg{
+  display:none;background:rgba(232,67,122,0.08);
+  border:1px solid rgba(232,67,122,0.2);border-radius:10px;
+  padding:10px 14px;font-size:12px;color:var(--rose2);
+  margin-bottom:14px;text-align:center;
+}
+.error-msg.show{display:block}
+
+/* char counter */
+.char-count{font-size:10px;color:var(--muted2);text-align:right;margin-top:4px}
+
+@keyframes fadeup{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="amb1"></div>
+<div class="amb2"></div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-row">
+    <button id="backBtn" onclick="goBack()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0;line-height:1;display:none">←</button>
+    <div class="logo" style="flex:1;text-align:center">ir<span>l</span></div>
+    <div class="step-label" id="stepLabel">Step 1 of 5</div>
+  </div>
+  <div class="progress-bar" id="progressBar">
+    <div class="prog-seg active" id="seg0"><div class="prog-seg-fill"></div></div>
+    <div class="prog-seg" id="seg1"><div class="prog-seg-fill"></div></div>
+    <div class="prog-seg" id="seg2"><div class="prog-seg-fill"></div></div>
+    <div class="prog-seg" id="seg3"><div class="prog-seg-fill"></div></div>
+    <div class="prog-seg" id="seg4"><div class="prog-seg-fill"></div></div>
+  </div>
+</div>
+
+<!-- ══ STEP 1 — BASIC INFO ══ -->
+<div class="page active" id="page0">
+  <span class="page-emoji">👋</span>
+  <h1 class="page-title">Let's start with the basics.</h1>
+  <p class="page-sub">Quick stuff first. Takes less than a minute.</p>
+
+  <div class="field">
+    <label class="field-label">Your name <span style="color:var(--muted2);font-size:10px;letter-spacing:0;text-transform:none;margin-left:4px">· from LinkedIn</span></label>
+    <input type="text" id="nameInput" placeholder="Your name" maxlength="40" readonly style="opacity:0.6;cursor:not-allowed;border-color:rgba(245,237,232,0.06);background:rgba(245,237,232,0.02)"/>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Age</label>
+    <input type="text" id="ageInput" placeholder="Your age" maxlength="2" inputmode="numeric" pattern="[0-9]*"/>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Gender</label>
+    <div class="gender-row">
+      <div class="gender-pill" id="genderM" onclick="selectGender('male')">Man</div>
+      <div class="gender-pill" id="genderF" onclick="selectGender('female')">Woman</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">City</label>
+    <select id="cityInput">
+      <option value="" disabled selected>Select your city</option>
+      <option value="Mumbai">Mumbai</option>
+      <option value="Delhi NCR">Delhi NCR</option>
+      <option value="Bengaluru">Bengaluru</option>
+      <option value="Pune">Pune</option>
+    </select>
+  </div>
+
+</div>
+
+<!-- ══ STEP 2 — INTENT ══ -->
+<div class="page" id="page1">
+  <span class="page-emoji">🎯</span>
+  <h1 class="page-title">What are you here for?</h1>
+  <p class="page-sub">Be honest. It helps us match you better and saves everyone's time.</p>
+
+  <div class="intent-row">
+    <div class="intent-pill" id="intentS" onclick="selectIntent('Serious')">
+      <div class="intent-emoji">💍</div>
+      <div>
+        <div class="intent-label">Serious</div>
+        <div class="intent-desc">Looking for something real and long term.</div>
+      </div>
+    </div>
+    <div class="intent-pill" id="intentC" onclick="selectIntent('Casual')">
+      <div class="intent-emoji">☀️</div>
+      <div>
+        <div class="intent-label">Casual</div>
+        <div class="intent-desc">Open to meeting people, seeing where it goes.</div>
+      </div>
+    </div>
+    <div class="intent-pill" id="intentO" onclick="selectIntent('Open')">
+      <div class="intent-emoji">✨</div>
+      <div>
+        <div class="intent-label">Open</div>
+        <div class="intent-desc">Honestly not sure yet — and that's okay.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ STEP 3 — QUESTIONS ══ -->
+<div class="page" id="page2">
+  <span class="page-emoji">💬</span>
+  <h1 class="page-title">Show them who you are.</h1>
+  <p class="page-sub">Pick <b>3 questions</b> and answer them. This is what people will actually read.</p>
+
+  <div class="q-counter" id="qCounter">0 of 3 selected</div>
+
+  <div class="q-pool" id="qPool">
+    <!-- generated by JS -->
+  </div>
+</div>
+
+<!-- ══ STEP 4 — PHOTOS ══ -->
+<div class="page" id="page3">
+  <span class="page-emoji">📸</span>
+  <h1 class="page-title">Put a face to the name.</h1>
+  <p class="page-sub">First photo is mandatory. Add up to 2 more. <b>Real photos only</b> — we verify manually.</p>
+
+  <div class="photo-grid">
+    <div class="photo-slot mandatory" id="slot0" onclick="triggerUpload(0)">
+      <span class="slot-icon">📷</span>
+      <span class="slot-label">Main photo<br>Required</span>
+      <img class="slot-img" id="img0" style="display:none"/>
+      <button class="slot-remove" id="rem0" style="display:none" onclick="removePhoto(event,0)">✕</button>
+    </div>
+    <div class="photo-slot" id="slot1" onclick="triggerUpload(1)">
+      <span class="slot-icon">＋</span>
+      <span class="slot-label">Optional</span>
+      <img class="slot-img" id="img1" style="display:none"/>
+      <button class="slot-remove" id="rem1" style="display:none" onclick="removePhoto(event,1)">✕</button>
+    </div>
+    <div class="photo-slot" id="slot2" onclick="triggerUpload(2)">
+      <span class="slot-icon">＋</span>
+      <span class="slot-label">Optional</span>
+      <img class="slot-img" id="img2" style="display:none"/>
+      <button class="slot-remove" id="rem2" style="display:none" onclick="removePhoto(event,2)">✕</button>
+    </div>
+  </div>
+
+  <input type="file" id="fileInput0" accept="image/*" onchange="handlePhoto(0,this)"/>
+  <input type="file" id="fileInput1" accept="image/*" onchange="handlePhoto(1,this)"/>
+  <input type="file" id="fileInput2" accept="image/*" onchange="handlePhoto(2,this)"/>
+
+  <p class="photo-note">Photos are only shown to verified IRL users.<br><b>No screenshots or AI photos.</b> We check manually.</p>
+</div>
+
+<!-- ══ STEP 5 — VOICE NOTE ══ -->
+<div class="page" id="page4">
+  <span class="page-emoji">🎙️</span>
+  <h1 class="page-title">Let them hear you.</h1>
+  <p class="page-sub">30 seconds. Answer the prompt below. This is what makes IRL different.</p>
+
+  <div class="voice-prompt">
+    Tell us something about yourself that isn't on your LinkedIn.
+  </div>
+
+  <div class="voice-box" id="voiceBox">
+    <div class="voice-timer" id="voiceTimer">0:30</div>
+    <div class="voice-status" id="voiceStatus">Tap to start recording</div>
+
+    <div class="waveform" id="waveform" style="display:none">
+      <div class="wave-bar"></div><div class="wave-bar"></div>
+      <div class="wave-bar"></div><div class="wave-bar"></div>
+      <div class="wave-bar"></div><div class="wave-bar"></div>
+      <div class="wave-bar"></div>
+    </div>
+
+    <button class="voice-btn idle" id="voiceBtn" onclick="toggleRecording()">🎙️</button>
+  </div>
+
+  <!-- playback section — shown after recording -->
+  <div id="playbackSection" style="display:none;margin-bottom:16px">
+    <div style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.2);border-radius:14px;padding:16px 18px">
+      <div style="font-size:12px;color:var(--green);font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:6px">
+        <span>✓</span> Voice note recorded
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <button id="playBtn" onclick="playVoice()" style="width:40px;height:40px;border-radius:50%;background:var(--rose);border:none;color:white;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">▶</button>
+        <div style="flex:1">
+          <div style="height:4px;background:rgba(245,237,232,0.1);border-radius:2px;overflow:hidden">
+            <div id="playProgress" style="height:100%;width:0%;background:var(--rose);border-radius:2px;transition:width 0.1s"></div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px" id="playTime">0:00</div>
+        </div>
+      </div>
+    </div>
+    <button class="voice-redo" id="voiceRedo" onclick="resetRecording()" style="margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:rgba(245,237,232,0.04);border:1px solid rgba(245,237,232,0.12);border-radius:13px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--muted);cursor:pointer;transition:all 0.2s">
+        <span style="font-size:16px">🔄</span> Not happy with it? Record again
+      </button>
+  </div>
+
+  <div style="font-size:11px;color:var(--muted2);text-align:center;margin-top:4px;line-height:1.6">
+    iPhone users: add IRL to your home screen for best recording experience.
+  </div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <div class="error-msg" id="errorMsg"></div>
+  <button class="btn-primary" id="nextBtn" onclick="handleNext()">
+    <span class="btn-label" id="nextLabel">Continue →</span>
+    <div class="dots-loader"><span></span><span></span><span></span></div>
+  </button>
+</div>
+
+<script>
+// ── SUPABASE
+const { createClient } = window.supabase;
+const db = createClient(
+  'https://sxpbdkamagunvktdkogw.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4cGJka2FtYWd1bnZrdGRrb2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDc3NDUsImV4cCI6MjA5NDU4Mzc0NX0.rTQeSH2dWSLP0IxwewvvEn3qxIbRQcCMZVjpr_0_LJ8'
+);
+
+const phone  = localStorage.getItem('irl_phone');
+const userId = localStorage.getItem('irl_li_uid');
+if(!phone){ window.location.href = 'index.html'; }
+
+// prefill name from LinkedIn after DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  const liName = localStorage.getItem('irl_li_name');
+  if(liName) document.getElementById('nameInput').value = liName;
+});
+
+// block non-numeric input on age field
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('ageInput').addEventListener('input', function(){
+    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 2);
+  });
+});
+
+// ── STATE
+let currentStep = 0;
+const TOTAL_STEPS = 5;
+let selectedGender = '';
+let selectedIntent = '';
+let photoFiles = [null, null, null];
+let mediaRecorder = null;
+let audioChunks = [];
+let audioBlob = null;
+let recordingTimer = null;
+let secondsLeft = 30;
+let isRecording = false;
+
+// ── QUESTIONS POOL
+const QUESTIONS = [
+  "What does your ideal Sunday look like?",
+  "What are you actually looking for right now, honestly?",
+  "One thing people get wrong about you.",
+  "The last thing that made you genuinely laugh.",
+  "What's something you're currently obsessed with?",
+  "Describe yourself in three words — but make them interesting."
+];
+let selectedQuestions = {}; // {questionIndex: answerText}
+
+// build question UI
+function buildQuestions(){
+  const pool = document.getElementById('qPool');
+  pool.innerHTML = '';
+  QUESTIONS.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'q-item';
+    div.id = 'qi' + i;
+    div.innerHTML = `
+      <div class="q-text">${q}</div>
+      <textarea class="q-answer" id="qa${i}" placeholder="Your answer..." maxlength="150" onclick="event.stopPropagation()"></textarea>
+      <div class="char-count" id="qc${i}">0 / 150</div>
+    `;
+    div.addEventListener('click', () => toggleQuestion(i));
+    const ta = div.querySelector('textarea');
+    ta.addEventListener('input', () => {
+      selectedQuestions[i] = ta.value;
+      document.getElementById('qc'+i).textContent = ta.value.length + ' / 150';
+    });
+    pool.appendChild(div);
+  });
+}
+buildQuestions();
+
+function toggleQuestion(i){
+  const item = document.getElementById('qi'+i);
+  const isSelected = item.classList.contains('selected');
+  const count = Object.keys(selectedQuestions).length;
+
+  if(isSelected){
+    // deselect — save the answer but mark as unselected
+    // keep the answer in selectedQuestions as a draft so it's restored on reselect
+    item.classList.remove('selected');
+    delete selectedQuestions[i];
+  } else {
+    if(count >= 3){ showError('Pick 3 questions max. Deselect one first.'); return; }
+    item.classList.add('selected');
+    // restore previously typed answer if it exists
+    const existing = document.getElementById('qa'+i).value;
+    selectedQuestions[i] = existing;
+    setTimeout(()=>document.getElementById('qa'+i).focus(), 100);
+  }
+  hideError();
+  updateQCounter();
+  updateLockedState();
+}
+
+function updateQCounter(){
+  const n = Object.keys(selectedQuestions).length;
+  document.getElementById('qCounter').textContent = n + ' of 3 selected';
+}
+
+function updateLockedState(){
+  const count = Object.keys(selectedQuestions).length;
+  QUESTIONS.forEach((_, i) => {
+    const item = document.getElementById('qi'+i);
+    if(count >= 3 && !item.classList.contains('selected')){
+      item.classList.add('locked');
+    } else {
+      item.classList.remove('locked');
+    }
+  });
+}
+
+// ── GENDER
+function selectGender(g){
+  selectedGender = g;
+  document.getElementById('genderM').classList.toggle('selected', g==='male');
+  document.getElementById('genderF').classList.toggle('selected', g==='female');
+  hideError();
+}
+
+// ── INTENT
+function selectIntent(i){
+  selectedIntent = i;
+  ['S','C','O'].forEach(x => document.getElementById('intent'+x).classList.remove('selected'));
+  document.getElementById('intent'+i[0]).classList.add('selected');
+  hideError();
+  // auto advance to next step after short delay so user sees selection
+  setTimeout(() => goToStep(currentStep + 1), 400);
+}
+
+// ── PHOTOS
+function triggerUpload(i){ document.getElementById('fileInput'+i).click(); }
+
+function handlePhoto(i, input){
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 5 * 1024 * 1024){ showError('Photo must be under 5MB.'); return; }
+  photoFiles[i] = file;
+  const url = URL.createObjectURL(file);
+  const img = document.getElementById('img'+i);
+  img.src = url;
+  img.style.display = 'block';
+  document.getElementById('rem'+i).style.display = 'flex';
+  document.getElementById('slot'+i).classList.add('filled');
+  hideError();
+}
+
+function removePhoto(e, i){
+  e.stopPropagation();
+  photoFiles[i] = null;
+  document.getElementById('img'+i).style.display = 'none';
+  document.getElementById('img'+i).src = '';
+  document.getElementById('rem'+i).style.display = 'none';
+  document.getElementById('slot'+i).classList.remove('filled');
+  document.getElementById('fileInput'+i).value = '';
+}
+
+// ── VOICE RECORDING
+async function toggleRecording(){
+  if(isRecording){ stopRecording(); return; }
+  if(audioBlob){ return; } // already recorded
+  await startRecording();
+}
+
+async function startRecording(){
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = () => {
+      audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      stream.getTracks().forEach(t => t.stop());
+      showDoneState();
+    };
+    mediaRecorder.start();
+    isRecording = true;
+
+    // update UI
+    document.getElementById('voiceBox').classList.add('recording');
+    document.getElementById('voiceBtn').className = 'voice-btn recording';
+    document.getElementById('voiceBtn').textContent = '⏹';
+    document.getElementById('voiceStatus').textContent = 'Recording... tap to stop';
+    document.getElementById('waveform').style.display = 'flex';
+
+    // countdown
+    secondsLeft = 30;
+    updateTimer();
+    recordingTimer = setInterval(() => {
+      secondsLeft--;
+      updateTimer();
+      if(secondsLeft <= 0){ stopRecording(); }
+    }, 1000);
+
+  } catch(err){
+    showError('Microphone access denied. Please allow mic access and try again.');
+  }
+}
+
+function stopRecording(){
+  if(!mediaRecorder) return;
+  clearInterval(recordingTimer);
+  isRecording = false;
+  mediaRecorder.stop();
+  document.getElementById('voiceBox').classList.remove('recording');
+  document.getElementById('waveform').style.display = 'none';
+}
+
+function showDoneState(){
+  document.getElementById('voiceBox').classList.add('done');
+  document.getElementById('voiceBtn').className = 'voice-btn done';
+  document.getElementById('voiceBtn').textContent = '✓';
+  document.getElementById('voiceStatus').textContent = 'Sounds good!';
+  document.getElementById('voiceTimer').style.color = 'var(--green)';
+  document.getElementById('waveform').style.display = 'none';
+  document.getElementById('playbackSection').style.display = 'block';
+}
+
+let audioPlayer = null;
+let playInterval = null;
+
+function playVoice(){
+  if(!audioBlob) return;
+  const btn = document.getElementById('playBtn');
+  if(audioPlayer && !audioPlayer.paused){
+    audioPlayer.pause();
+    btn.textContent = '▶';
+    clearInterval(playInterval);
+    return;
+  }
+  if(audioPlayer){ audioPlayer.pause(); audioPlayer = null; }
+  const url = URL.createObjectURL(audioBlob);
+  audioPlayer = new Audio(url);
+  audioPlayer.play();
+  btn.textContent = '⏸';
+  playInterval = setInterval(() => {
+    if(!audioPlayer) return;
+    const pct = (audioPlayer.currentTime / (audioPlayer.duration || 1)) * 100;
+    document.getElementById('playProgress').style.width = pct + '%';
+    const s = Math.floor(audioPlayer.currentTime);
+    document.getElementById('playTime').textContent = '0:' + String(s).padStart(2,'0');
+    if(audioPlayer.ended){
+      btn.textContent = '▶';
+      clearInterval(playInterval);
+      document.getElementById('playProgress').style.width = '0%';
+      document.getElementById('playTime').textContent = '0:00';
+    }
+  }, 100);
+}
+
+function resetRecording(){
+  if(audioPlayer){ audioPlayer.pause(); audioPlayer = null; }
+  clearInterval(playInterval);
+  audioBlob = null;
+  audioChunks = [];
+  isRecording = false;
+  secondsLeft = 30;
+  clearInterval(recordingTimer);
+  document.getElementById('voiceBox').className = 'voice-box';
+  document.getElementById('voiceBtn').className = 'voice-btn idle';
+  document.getElementById('voiceBtn').textContent = '🎙️';
+  document.getElementById('voiceStatus').textContent = 'Tap to start recording';
+  document.getElementById('voiceTimer').textContent = '0:30';
+  document.getElementById('voiceTimer').style.color = '';
+  document.getElementById('waveform').style.display = 'none';
+  document.getElementById('playbackSection').style.display = 'none';
+  document.getElementById('playProgress').style.width = '0%';
+  document.getElementById('playTime').textContent = '0:00';
+}
+
+function updateTimer(){
+  const m = Math.floor(secondsLeft / 60);
+  const s = secondsLeft % 60;
+  document.getElementById('voiceTimer').textContent = m + ':' + String(s).padStart(2,'0');
+}
+
+// ── STEP NAVIGATION
+function updateProgress(step){
+  document.getElementById('stepLabel').textContent = 'Step ' + (step+1) + ' of ' + TOTAL_STEPS;
+  for(let i=0; i<TOTAL_STEPS; i++){
+    const seg = document.getElementById('seg'+i);
+    seg.className = 'prog-seg';
+    if(i < step) seg.classList.add('done');
+    else if(i === step) seg.classList.add('active');
+  }
+  // last step button label
+  document.getElementById('nextLabel').textContent = step === TOTAL_STEPS-1 ? 'Submit Profile 🎉' : 'Continue →';
+}
+
+function goBack(){
+  if(currentStep > 0) goToStep(currentStep - 1);
+}
+
+function goToStep(step){
+  document.getElementById('page'+currentStep).classList.remove('active');
+  currentStep = step;
+  document.getElementById('page'+currentStep).classList.add('active');
+  updateProgress(step);
+  hideError();
+  window.scrollTo(0,0);
+  // show back button on all steps except first
+  document.getElementById('backBtn').style.display = step > 0 ? 'block' : 'none';
+}
+
+// ── VALIDATION PER STEP
+function validateStep(step){
+  switch(step){
+    case 0:
+      if(!document.getElementById('nameInput').value.trim()){ showError('Please enter your name.'); return false; }
+      const age = parseInt(document.getElementById('ageInput').value);
+      if(!age || age < 18 || age > 45){ showError('Please enter a valid age between 18 and 45.'); return false; }
+      if(!selectedGender){ showError('Please select your gender.'); return false; }
+      if(!document.getElementById('cityInput').value){ showError('Please select your city.'); return false; }
+      return true;
+    case 1:
+      if(!selectedIntent){ showError('Please pick what you\'re looking for.'); return false; }
+      return true;
+    case 2:
+      const keys = Object.keys(selectedQuestions);
+      if(keys.length < 3){ showError('Please select and answer 3 questions.'); return false; }
+      const unanswered = keys.find(k => !selectedQuestions[k].trim());
+      if(unanswered !== undefined){ showError('Please answer all 3 selected questions.'); return false; }
+      return true;
+    case 3:
+      if(!photoFiles[0]){ showError('Please add at least one photo.'); return false; }
+      return true;
+    case 4:
+      if(!audioBlob){ showError('Please record your voice note before submitting.'); return false; }
+      return true;
+  }
+  return true;
+}
+
+// ── HANDLE NEXT / SUBMIT
+async function handleNext(){
+  hideError();
+  if(!validateStep(currentStep)) return;
+  if(currentStep < TOTAL_STEPS - 1){
+    goToStep(currentStep + 1);
+    return;
+  }
+  // SUBMIT
+  await submitProfile();
+}
+
+async function submitProfile(){
+  const btn = document.getElementById('nextBtn');
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  try {
+    // 1 — update profiles table
+    const { error: profileErr } = await db
+      .from('profiles')
+      .update({
+        full_name:    document.getElementById('nameInput').value.trim(),
+        age:          parseInt(document.getElementById('ageInput').value),
+        gender:       selectedGender,
+        city:         document.getElementById('cityInput').value,
+        intent:       selectedIntent,
+        onboarding_step: 2,
+      })
+      .eq('phone', phone);
+    if(profileErr) throw new Error('Profile error: ' + profileErr.message);
+
+    // 2 — upload photos
+    const photoUrls = [null, null, null];
+    for(let i=0; i<3; i++){
+      if(!photoFiles[i]) continue;
+      const ext   = photoFiles[i].name.split('.').pop();
+      const path  = `${phone}/photo${i+1}_${Date.now()}.${ext}`;
+      const { error: upErr } = await db.storage.from('Photos').upload(path, photoFiles[i], { upsert: true });
+      if(upErr) throw new Error('Photo upload error: ' + upErr.message);
+      const { data } = db.storage.from('Photos').getPublicUrl(path);
+      photoUrls[i] = data.publicUrl;
+    }
+
+    // 3 — upload voice note
+    let voiceUrl = null;
+    if(audioBlob){
+      const voicePath = `${phone}/voice_${Date.now()}.webm`;
+      const { error: vErr } = await db.storage.from('Voice').upload(voicePath, audioBlob, { upsert: true });
+      if(vErr) throw new Error('Voice upload error: ' + vErr.message);
+      const { data: vData } = db.storage.from('Voice').getPublicUrl(voicePath);
+      voiceUrl = vData.publicUrl;
+    }
+
+    // 4 — save to user_media
+    await db.from('user_media').delete().eq('user_id', userId);
+    const { error: mediaErr } = await db.from('user_media').insert({
+      user_id:   userId,
+      photo_1:   photoUrls[0],
+      photo_2:   photoUrls[1],
+      photo_3:   photoUrls[2],
+      voice_url: voiceUrl,
+    });
+    if(mediaErr) throw new Error('Media error: ' + mediaErr.message);
+
+    // 5 — save answers
+    const answerRows = Object.keys(selectedQuestions).map(k => ({
+      user_id:  userId,
+      question: QUESTIONS[parseInt(k)],
+      answer:   selectedQuestions[k].trim(),
+    }));
+    // delete old answers first then insert fresh
+    await db.from('user_answers').delete().eq('user_id', userId);
+    const { error: ansErr } = await db.from('user_answers').insert(answerRows);
+    if(ansErr) throw new Error('Answers error: ' + ansErr.message);
+
+    // 6 — done
+    window.location.href = 'pending.html';
+
+  } catch(err){
+    console.error(err);
+    showError(err.message || 'Something went wrong. Please try again.');
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+// ── UI HELPERS
+function showError(msg){
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.classList.add('show');
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function hideError(){ document.getElementById('errorMsg').classList.remove('show'); }
+
+// init progress
+updateProgress(0);
+</script>
+</body>
+</html>
