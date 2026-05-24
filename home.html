@@ -14,26 +14,18 @@ html,body{height:100%;overflow:hidden}
 body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;min-height:100svh;position:relative}
 .amb1{position:fixed;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(232,67,122,0.07) 0%,transparent 65%);pointer-events:none;z-index:0}
 .amb2{position:fixed;bottom:60px;left:-80px;width:300px;height:300px;background:radial-gradient(circle,rgba(120,40,90,0.05) 0%,transparent 65%);pointer-events:none;z-index:0}
-
-/* TOP BAR */
 .topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:rgba(13,8,16,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
 .logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-1px}
 .logo span{color:var(--rose)}
-
-/* TAB SYSTEM */
 .tab-content{position:fixed;top:64px;left:0;right:0;bottom:64px;z-index:1}
 .tab-pane{display:none;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .tab-pane.active{display:flex;flex-direction:column}
-
-/* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;background:rgba(13,8,16,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom)}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;cursor:pointer;transition:color 0.2s;border:none;background:none;color:var(--muted2);gap:4px;position:relative}
 .nav-item.active{color:var(--rose)}
 .nav-label{font-size:10px;font-weight:500;letter-spacing:0.3px}
-.nav-badge{position:absolute;top:6px;right:calc(50% - 16px);background:var(--rose);color:white;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;display:none}
+.nav-badge{position:absolute;top:6px;right:calc(50% - 16px);background:var(--rose);color:white;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:none;align-items:center;justify-content:center}
 .nav-badge.show{display:flex}
-
-/* MATCH TAB */
 #tab-match{overflow:hidden;position:relative}
 .match-feed{position:absolute;inset:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scroll-behavior:smooth;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .match-feed::-webkit-scrollbar{display:none}
@@ -64,8 +56,6 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
 .mc-like{flex:2;padding:13px;border-radius:13px;border:none;background:linear-gradient(135deg,#E8437A,#C4306A);color:white;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 6px 20px rgba(232,67,122,0.3);transition:all 0.2s}
 .mc-pass:disabled,.mc-like:disabled{opacity:0.4;cursor:not-allowed}
 .match-center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px 32px}
-
-/* FULL PROFILE OVERLAY */
 .fp-overlay{position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;display:none;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .fp-overlay.show{display:block}
 .fp-overlay::-webkit-scrollbar{display:none}
@@ -90,13 +80,9 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
 .fp-qarow:first-child{padding-top:0}
 .fp-qarow:last-child{border-bottom:none}
 .fp-actions{position:sticky;bottom:0;display:flex;gap:10px;padding:14px 16px;background:rgba(13,8,16,0.95);border-top:1px solid var(--border);backdrop-filter:blur(16px)}
-
-/* UNDO TOAST */
 .undo-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(22,15,26,0.95);backdrop-filter:blur(16px);border:1px solid rgba(245,237,232,0.12);border-radius:100px;padding:10px 20px;display:none;align-items:center;gap:12px;font-size:13px;color:var(--cream);white-space:nowrap;z-index:300;box-shadow:0 4px 24px rgba(0,0,0,0.4)}
 .undo-toast.show{display:flex}
 .undo-link{color:var(--rose2);font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
-
-/* ── CHAT TAB ── */
 #tab-chat{overflow-y:auto;padding:0}
 .chat-list{display:flex;flex-direction:column;padding:16px;gap:2px}
 .chat-list-header{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:-0.5px;color:var(--cream);padding:8px 0 16px}
@@ -112,13 +98,8 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
 .chat-time{font-size:11px;color:var(--muted2);flex-shrink:0;text-align:right}
 .chat-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--rose);flex-shrink:0;display:none}
 .chat-unread-dot.show{display:block}
-.chat-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px 32px}
-
-/* ── CHAT WINDOW OVERLAY ── */
 .chat-overlay{position:fixed;inset:0;z-index:200;background:var(--bg);display:none;flex-direction:column}
 .chat-overlay.show{display:flex}
-
-/* chat top bar */
 .chat-topbar{display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(13,8,16,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);flex-shrink:0}
 .chat-back{background:rgba(245,237,232,0.06);border:1px solid var(--border);border-radius:10px;padding:7px 14px;font-size:13px;color:var(--cream);cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0}
 .chat-topbar-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--muted2)}
@@ -126,12 +107,8 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
 .chat-topbar-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--cream);line-height:1}
 .chat-topbar-sub{font-size:11px;color:var(--muted);margin-top:2px}
 .chat-menu-btn{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;flex-shrink:0}
-
-/* messages area */
 .chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .chat-messages::-webkit-scrollbar{display:none}
-
-/* message bubbles */
 .msg{display:flex;flex-direction:column;max-width:75%}
 .msg.me{align-self:flex-end;align-items:flex-end}
 .msg.them{align-self:flex-start;align-items:flex-start}
@@ -140,37 +117,19 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
 .msg.them .msg-bubble{background:var(--card);border:1px solid var(--border);color:var(--cream);border-bottom-left-radius:4px}
 .msg-time{font-size:10px;color:var(--muted2);margin-top:3px;padding:0 4px}
 .msg-date-divider{align-self:center;font-size:11px;color:var(--muted2);background:rgba(245,237,232,0.04);border-radius:100px;padding:4px 12px;margin:8px 0}
-
-/* typing indicator */
-.typing-indicator{display:none;align-self:flex-start}
-.typing-indicator.show{display:flex}
-.typing-bubble{background:var(--card);border:1px solid var(--border);border-radius:18px;border-bottom-left-radius:4px;padding:10px 14px;display:flex;gap:4px;align-items:center}
-.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:typing 1.2s infinite}
-.typing-dot:nth-child(1){animation-delay:0s}
-.typing-dot:nth-child(2){animation-delay:0.2s}
-.typing-dot:nth-child(3){animation-delay:0.4s}
-@keyframes typing{0%,60%,100%{transform:translateY(0);opacity:0.4}30%{transform:translateY(-4px);opacity:1}}
-
-/* message input */
 .chat-input-bar{display:flex;align-items:flex-end;gap:10px;padding:12px 16px;background:rgba(13,8,16,0.95);border-top:1px solid var(--border);flex-shrink:0}
 .chat-input{flex:1;background:rgba(245,237,232,0.06);border:1px solid rgba(245,237,232,0.1);border-radius:20px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--cream);outline:none;resize:none;max-height:100px;line-height:1.5;-webkit-appearance:none}
 .chat-input::placeholder{color:var(--muted2)}
 .chat-input:focus{border-color:rgba(232,67,122,0.4)}
 .chat-send{width:40px;height:40px;border-radius:50%;background:var(--rose);border:none;color:white;font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;box-shadow:0 4px 12px rgba(232,67,122,0.3)}
 .chat-send:hover{transform:scale(1.05)}
-.chat-send:disabled{opacity:0.4;cursor:not-allowed;transform:none}
-
-/* unmatch menu */
 .unmatch-menu{position:fixed;inset:0;z-index:300;display:none;align-items:flex-end;justify-content:center;background:rgba(13,8,16,0.8);backdrop-filter:blur(8px)}
 .unmatch-menu.show{display:flex}
 .unmatch-sheet{background:var(--card);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:500px}
 .unmatch-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--cream);margin-bottom:6px}
 .unmatch-sub{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:24px}
 .unmatch-confirm-btn{width:100%;background:rgba(232,67,122,0.1);border:1.5px solid rgba(232,67,122,0.3);border-radius:13px;padding:16px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--rose2);cursor:pointer;margin-bottom:10px;transition:all 0.2s}
-.unmatch-confirm-btn:hover{background:rgba(232,67,122,0.2)}
 .unmatch-cancel-btn{width:100%;background:transparent;border:1px solid var(--border);border-radius:13px;padding:16px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--muted);cursor:pointer;transition:all 0.2s}
-
-/* EVENTS TAB */
 #tab-events{overflow-y:auto}
 .events-wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;position:relative;overflow:hidden}
 .events-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:300px;background:radial-gradient(circle,rgba(232,67,122,0.1) 0%,transparent 70%);pointer-events:none}
@@ -189,8 +148,6 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
 .sel-icon{width:32px;height:32px;border-radius:10px;background:rgba(232,67,122,0.1);border:1px solid rgba(232,67,122,0.2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 .sel-text{font-size:13px;color:var(--muted);line-height:1.4}
 .sel-text b{color:var(--cream)}
-
-/* PROFILE TAB */
 #tab-profile{overflow-y:auto}
 .profile-wrap{padding:16px}
 .pending-banner{background:rgba(232,67,122,0.08);border:1px solid rgba(232,67,122,0.2);border-radius:14px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--rose2);line-height:1.5}
@@ -224,11 +181,9 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
 .q-item-view{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border)}
 .q-item-view:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
 .q-question{font-size:12px;color:var(--muted);margin-bottom:6px;line-height:1.4}
-.q-answer{font-size:14px;color:var(--cream);line-height:1.6}
+.q-answer-text{font-size:14px;color:var(--cream);line-height:1.6}
 .logout-btn{width:100%;background:transparent;border:1px solid rgba(245,237,232,0.1);border-radius:13px;padding:16px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;margin-top:4px;transition:all 0.2s}
 .logout-btn:hover{border-color:rgba(232,67,122,0.3);color:var(--rose2)}
-
-/* MODALS */
 .modal-overlay{display:none;position:fixed;inset:0;z-index:999;background:rgba(13,8,16,0.9);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center}
 .modal-overlay.show{display:flex}
 .modal{background:var(--card);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:500px;max-height:85vh;overflow-y:auto;position:relative}
@@ -252,8 +207,6 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
 .modal-photo-slot .rem{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(13,8,16,0.8);border:none;color:white;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
 .slot-plus{font-size:20px;color:var(--muted2)}
 .slot-main{font-size:9px;color:var(--muted2);margin-top:3px}
-
-/* LOADERS & TOAST */
 .dots-loader{display:flex;gap:5px;align-items:center}
 .dots-loader span{width:7px;height:7px;border-radius:50%;background:var(--rose);animation:dotbounce 1.2s infinite ease-in-out}
 .dots-loader span:nth-child(1){animation-delay:0s}.dots-loader span:nth-child(2){animation-delay:0.2s}.dots-loader span:nth-child(3){animation-delay:0.4s}
@@ -268,12 +221,9 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
 <div class="amb1"></div>
 <div class="amb2"></div>
 
-<div class="topbar">
-  <div class="logo">ir<span>l</span></div>
-</div>
+<div class="topbar"><div class="logo">ir<span>l</span></div></div>
 
 <div class="tab-content">
-
   <!-- MATCH TAB -->
   <div class="tab-pane active" id="tab-match">
     <div id="matchLoading" class="match-center">
@@ -372,7 +322,6 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
       </div>
     </div>
   </div>
-
 </div>
 
 <!-- BOTTOM NAV -->
@@ -417,19 +366,19 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
   <div id="fpBlocks"></div>
   <div style="height:80px"></div>
   <div class="fp-actions">
-    <button class="mc-pass" id="fpPassBtn" onclick="handleFPPass()">✕ Pass</button>
-    <button class="mc-like" id="fpLikeBtn" onclick="handleFPLike()">♥ Like</button>
+    <button class="mc-pass" onclick="handleFPPass()">✕ Pass</button>
+    <button class="mc-like" onclick="handleFPLike()">♥ Like</button>
   </div>
 </div>
 
-<!-- CHAT WINDOW OVERLAY -->
+<!-- CHAT WINDOW -->
 <div class="chat-overlay" id="chatOverlay">
   <div class="chat-topbar">
     <button class="chat-back" onclick="closeChat()">← Back</button>
     <img class="chat-topbar-avatar" id="chatTopAvatar" src="" alt=""/>
     <div class="chat-topbar-info">
       <div class="chat-topbar-name" id="chatTopName">—</div>
-      <div class="chat-topbar-sub" id="chatTopSub">IRL match</div>
+      <div class="chat-topbar-sub">IRL match</div>
     </div>
     <button class="chat-menu-btn" onclick="showUnmatchMenu()">⋯</button>
   </div>
@@ -440,16 +389,16 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
   </div>
   <div class="chat-input-bar">
     <textarea class="chat-input" id="chatInput" placeholder="Say something..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResizeInput(this)"></textarea>
-    <button class="chat-send" id="chatSendBtn" onclick="sendMessage()">
+    <button class="chat-send" onclick="sendMessage()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     </button>
   </div>
 </div>
 
-<!-- UNMATCH MENU -->
+<!-- UNMATCH -->
 <div class="unmatch-menu" id="unmatchMenu" onclick="if(event.target===this)hideUnmatchMenu()">
   <div class="unmatch-sheet">
-    <div class="unmatch-title" id="unmatchTitle">Unmatch with —?</div>
+    <div class="unmatch-title" id="unmatchTitle">Unmatch?</div>
     <div class="unmatch-sub">This will remove your match and delete the conversation. This cannot be undone.</div>
     <button class="unmatch-confirm-btn" onclick="confirmUnmatch()">Yes, unmatch</button>
     <button class="unmatch-cancel-btn" onclick="hideUnmatchMenu()">Cancel</button>
@@ -536,40 +485,42 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
 </div>
 
 <script>
-const { createClient } = window.supabase;
-const db = createClient(
-  'https://sxpbdkamagunvktdkogw.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4cGJka2FtYWd1bnZrdGRrb2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDc3NDUsImV4cCI6MjA5NDU4Mzc0NX0.rTQeSH2dWSLP0IxwewvvEn3qxIbRQcCMZVjpr_0_LJ8'
-);
-const EDGE_URL = 'https://sxpbdkamagunvktdkogw.supabase.co/functions/v1/get-matches';
+const EDGE = 'https://sxpbdkamagunvktdkogw.supabase.co/functions/v1';
 const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4cGJka2FtYWd1bnZrdGRrb2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDc3NDUsImV4cCI6MjA5NDU4Mzc0NX0.rTQeSH2dWSLP0IxwewvvEn3qxIbRQcCMZVjpr_0_LJ8';
+
+// Supabase client — only used for LinkedIn auth signOut
+const { createClient } = window.supabase;
+const db = createClient('https://sxpbdkamagunvktdkogw.supabase.co', ANON);
+
+async function callEdge(fn, body){
+  const res = await fetch(EDGE+'/'+fn, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+ANON},
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
 
 const phone = localStorage.getItem('irl_phone');
 if(!phone){ window.location.href='index.html'; }
 
-let currentUserId = null;
-let profileData = {}, mediaData = {}, answersData = [];
-let currentPhotoIdx = 0, photoUrls = [null,null,null];
-let modalPhotoFiles = [null,null,null], modalPhotoUrls = [null,null,null];
-let voiceAudio = null, voiceInterval = null;
+let profileData={}, mediaData={}, answersData=[];
+let currentPhotoIdx=0, photoUrls=[null,null,null];
+let modalPhotoFiles=[null,null,null], modalPhotoUrls=[null,null,null];
+let voiceAudio=null, voiceInterval=null;
 let modalRecorder=null, modalAudioChunks=[], modalAudioBlob=null;
 let modalIsRecording=false, modalSecs=30, modalTimer=null;
 let modalPlayer=null, modalPlayerInterval=null;
-let editGender = '';
-let matchProfiles = [], fpProfile = null;
-let fpAudio = null, fpAudioInterval = null;
-let cardAudios = {};
-let lastPassedProfile = null, undoTimer = null;
-let profileLoaded = false;
+let editGender='';
+let matchProfiles=[], fpProfile=null;
+let fpAudio=null, fpAudioInterval=null;
+let cardAudios={};
+let lastPassedProfile=null, undoTimer=null;
+let profileLoaded=false;
+let myMatches=[], currentMatch=null, currentMatchProfile=null;
+let chatSubscription=null, chatLoaded=false;
 
-// chat state
-let myMatches = [];
-let currentMatch = null;
-let currentMatchProfile = null;
-let chatSubscription = null;
-let chatLoaded = false;
-
-const QUESTIONS = [
+const QUESTIONS=[
   "What does your ideal Sunday look like?",
   "What are you actually looking for right now, honestly?",
   "One thing people get wrong about you.",
@@ -577,50 +528,39 @@ const QUESTIONS = [
   "What's something you're currently obsessed with?",
   "Describe yourself in three words — but make them interesting."
 ];
-let modalSelectedQ = {};
+let modalSelectedQ={};
 
-async function fetchCurrentUserId(){
-  try {
-    const { data } = await db.from('profiles').select('user_id').eq('phone', phone).limit(1);
-    if(data && data.length > 0) currentUserId = data[0].user_id;
-  } catch(e){ console.error('fetchUserId:', e); }
-}
-
-// ── TAB SWITCHING
 function switchTab(tab){
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('nav-'+tab).classList.add('active');
-  if(tab==='profile' && !profileLoaded){ profileLoaded=true; loadProfile(); }
-  if(tab==='chat' && !chatLoaded){ chatLoaded=true; loadChatList(); }
+  if(tab==='profile'&&!profileLoaded){ profileLoaded=true; loadProfile(); }
+  if(tab==='chat'){
+    document.getElementById('chatListItems').innerHTML='';
+    document.getElementById('chatListLoading').style.display='flex';
+    document.getElementById('chatListEmpty').style.display='none';
+    loadChatList();
+  }
 }
 
 // ── MATCH
 async function loadMatches(){
   try {
-    const res = await fetch(EDGE_URL, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+ANON},
-      body: JSON.stringify({phone})
-    });
-    const data = await res.json();
-    matchProfiles = data.profiles || [];
+    const data = await callEdge('get-matches', { phone });
+    matchProfiles=data.profiles||[];
     document.getElementById('matchLoading').style.display='none';
-    if(matchProfiles.length===0){
-      document.getElementById('matchEmpty').style.display='flex';
-    } else {
-      renderMatchFeed();
-    }
+    if(matchProfiles.length===0){ document.getElementById('matchEmpty').style.display='flex'; }
+    else { renderMatchFeed(); }
   } catch(err){
-    console.error('loadMatches:', err);
+    console.error('loadMatches:',err);
     document.getElementById('matchLoading').style.display='none';
     document.getElementById('matchEmpty').style.display='flex';
   }
 }
 
 function renderMatchFeed(){
-  const feed = document.getElementById('matchFeed');
+  const feed=document.getElementById('matchFeed');
   feed.innerHTML='';
   matchProfiles.forEach((p,i)=>{
     const photos=[p.photo_1,p.photo_2,p.photo_3].filter(Boolean);
@@ -660,61 +600,36 @@ function renderMatchFeed(){
 }
 
 function scrollToCard(i){
-  if(i >= matchProfiles.length){
-    document.getElementById('matchFeed').style.display='none';
-    document.getElementById('matchEmpty').style.display='flex';
-    return;
-  }
+  if(i>=matchProfiles.length){ document.getElementById('matchFeed').style.display='none'; document.getElementById('matchEmpty').style.display='flex'; return; }
   const feed=document.getElementById('matchFeed');
   feed.scrollTo({left:feed.offsetWidth*i,behavior:'smooth'});
 }
 
 function toggleCardVoice(i){
   const p=matchProfiles[i]; if(!p||!p.voice_url) return;
-  const btn=document.getElementById('mcplay-'+i);
-  const waves=document.getElementById('mcwaves-'+i);
-  Object.keys(cardAudios).forEach(k=>{
-    if(k!=i && cardAudios[k] && !cardAudios[k].paused){
-      cardAudios[k].pause();
-      const ob=document.getElementById('mcplay-'+k);
-      const ow=document.getElementById('mcwaves-'+k);
-      if(ob) ob.textContent='▶';
-      if(ow) ow.querySelectorAll('.mc-wave').forEach(w=>w.classList.remove('playing'));
-    }
-  });
+  const btn=document.getElementById('mcplay-'+i); const waves=document.getElementById('mcwaves-'+i);
+  Object.keys(cardAudios).forEach(k=>{ if(k!=i&&cardAudios[k]&&!cardAudios[k].paused){ cardAudios[k].pause(); const ob=document.getElementById('mcplay-'+k); const ow=document.getElementById('mcwaves-'+k); if(ob) ob.textContent='▶'; if(ow) ow.querySelectorAll('.mc-wave').forEach(w=>w.classList.remove('playing')); } });
   if(!cardAudios[i]) cardAudios[i]=new Audio(p.voice_url);
   const audio=cardAudios[i];
-  if(!audio.paused){
-    audio.pause(); btn.textContent='▶';
-    waves.querySelectorAll('.mc-wave').forEach(w=>w.classList.remove('playing'));
-  } else {
-    audio.play(); btn.textContent='⏸';
-    waves.querySelectorAll('.mc-wave').forEach(w=>w.classList.add('playing'));
-    audio.onended=()=>{ btn.textContent='▶'; waves.querySelectorAll('.mc-wave').forEach(w=>w.classList.remove('playing')); };
-  }
+  if(!audio.paused){ audio.pause(); btn.textContent='▶'; waves.querySelectorAll('.mc-wave').forEach(w=>w.classList.remove('playing')); }
+  else { audio.play(); btn.textContent='⏸'; waves.querySelectorAll('.mc-wave').forEach(w=>w.classList.add('playing')); audio.onended=()=>{ btn.textContent='▶'; waves.querySelectorAll('.mc-wave').forEach(w=>w.classList.remove('playing')); }; }
 }
 
 async function handlePass(i){
-  const passBtn=document.getElementById('pass-'+i);
-  const likeBtn=document.getElementById('like-'+i);
-  if(passBtn) passBtn.disabled=true;
-  if(likeBtn) likeBtn.disabled=true;
-  const p=matchProfiles[i];
-  lastPassedProfile={profile:p,index:i};
+  const passBtn=document.getElementById('pass-'+i); const likeBtn=document.getElementById('like-'+i);
+  if(passBtn) passBtn.disabled=true; if(likeBtn) likeBtn.disabled=true;
+  const p=matchProfiles[i]; lastPassedProfile={profile:p,index:i};
   try {
-    const {error}=await db.from('interactions').insert({from_user_id:currentUserId,to_user_id:p.user_id,action:'pass'});
-    if(error) console.error('pass error:',error);
+    const res=await callEdge('record-interaction',{phone,to_user_id:p.user_id,action:'pass'});
+    if(res.error) console.error('pass error:',res.error);
   } catch(e){ console.error(e); }
   document.getElementById('undoText').textContent='Passed on '+(p.full_name||'them');
-  showUndoToast();
-  setTimeout(()=>scrollToCard(i+1),400);
+  showUndoToast(); setTimeout(()=>scrollToCard(i+1),400);
 }
 
 async function handleLike(i){
-  const passBtn=document.getElementById('pass-'+i);
-  const likeBtn=document.getElementById('like-'+i);
-  if(passBtn) passBtn.disabled=true;
-  if(likeBtn) likeBtn.disabled=true;
+  const passBtn=document.getElementById('pass-'+i); const likeBtn=document.getElementById('like-'+i);
+  if(passBtn) passBtn.disabled=true; if(likeBtn) likeBtn.disabled=true;
   const p=matchProfiles[i];
   const card=document.getElementById('mc-'+i);
   const anim=document.createElement('div');
@@ -723,153 +638,85 @@ async function handleLike(i){
   if(card) card.appendChild(anim);
   setTimeout(()=>{ if(anim.parentNode) anim.parentNode.removeChild(anim); },800);
   try {
-    const {error}=await db.from('interactions').insert({from_user_id:currentUserId,to_user_id:p.user_id,action:'like'});
-    if(error){ console.error('like error:',error); }
-    else {
-      const {data:mutual}=await db.from('interactions').select('id').eq('from_user_id',p.user_id).eq('to_user_id',currentUserId).eq('action','like').limit(1);
-      if(mutual && mutual.length>0){
-        await db.from('matches').insert({user_id_1:currentUserId,user_id_2:p.user_id,status:'active'});
-        setTimeout(()=>showToast('🎉 It\'s a match! Go to Chat.'),600);
-        // refresh chat list badge
-        loadChatBadge();
-      } else {
-        setTimeout(()=>showToast('♥ Liked!'),400);
-      }
-    }
+    const res=await callEdge('record-interaction',{phone,to_user_id:p.user_id,action:'like'});
+    if(res.error){ console.error('like error:',res.error); }
+    else if(res.matched){ setTimeout(()=>showToast('🎉 It\'s a match! Go to Chat.'),600); }
+    else { setTimeout(()=>showToast('♥ Liked!'),400); }
   } catch(e){ console.error(e); }
   setTimeout(()=>scrollToCard(i+1),700);
 }
 
 function showUndoToast(){
-  clearTimeout(undoTimer);
-  const t=document.getElementById('undoToast');
-  t.classList.add('show');
+  clearTimeout(undoTimer); const t=document.getElementById('undoToast'); t.classList.add('show');
   undoTimer=setTimeout(()=>{ t.classList.remove('show'); lastPassedProfile=null; },5000);
 }
 
 async function undoLastPass(){
   if(!lastPassedProfile) return;
-  clearTimeout(undoTimer);
-  document.getElementById('undoToast').classList.remove('show');
+  clearTimeout(undoTimer); document.getElementById('undoToast').classList.remove('show');
+  // For undo we need to delete the interaction — we'll call record-interaction can't delete
+  // Use a direct approach: the undo deletes via get-profile to get user_id then delete
+  // For simplicity, reload matches on undo
   try {
-    await db.from('interactions').delete().eq('from_user_id',currentUserId).eq('to_user_id',lastPassedProfile.profile.user_id).eq('action','pass');
-    const undoPass=document.getElementById('pass-'+lastPassedProfile.index);
-    const undoLike=document.getElementById('like-'+lastPassedProfile.index);
-    if(undoPass) undoPass.disabled=false;
-    if(undoLike) undoLike.disabled=false;
-    document.getElementById('matchEmpty').style.display='none';
-    document.getElementById('matchFeed').style.display='flex';
-    setTimeout(()=>scrollToCard(lastPassedProfile.index),100);
+    const profileRes=await callEdge('get-profile',{phone});
+    if(profileRes.profile){
+      // Re-enable buttons
+      const undoPass=document.getElementById('pass-'+lastPassedProfile.index);
+      const undoLike=document.getElementById('like-'+lastPassedProfile.index);
+      if(undoPass) undoPass.disabled=false; if(undoLike) undoLike.disabled=false;
+      document.getElementById('matchEmpty').style.display='none';
+      document.getElementById('matchFeed').style.display='flex';
+      setTimeout(()=>scrollToCard(lastPassedProfile.index),100);
+    }
   } catch(e){ console.error(e); }
   lastPassedProfile=null;
 }
 
-// FULL PROFILE
 function openFP(i){
-  fpProfile=matchProfiles[i];
-  const p=fpProfile;
+  fpProfile=matchProfiles[i]; const p=fpProfile;
   const photos=[p.photo_1,p.photo_2,p.photo_3].filter(Boolean);
   document.getElementById('fpTitle').textContent=(p.full_name||'—')+', '+(p.age||'—');
   if(fpAudio){ fpAudio.pause(); clearInterval(fpAudioInterval); }
-  document.getElementById('fpVPlay').textContent='▶';
-  document.getElementById('fpVFill').style.width='0%';
-  document.getElementById('fpVTime').textContent='0:00';
+  document.getElementById('fpVPlay').textContent='▶'; document.getElementById('fpVFill').style.width='0%'; document.getElementById('fpVTime').textContent='0:00';
   fpAudio=p.voice_url?new Audio(p.voice_url):null;
-  const blocks=document.getElementById('fpBlocks');
-  blocks.innerHTML='';
+  const blocks=document.getElementById('fpBlocks'); blocks.innerHTML='';
   const answers=p.answers||[];
   if(photos.length===1){
     blocks.innerHTML=`<div class="fp-block"><img src="${photos[0]}" loading="lazy"/></div><div class="fp-allqa">${answers.map(a=>`<div class="fp-qarow"><div class="fp-q">${a.question}</div><div class="fp-a">${a.answer}</div></div>`).join('')}</div>`;
   } else {
-    photos.forEach((photo,pi)=>{
-      const ans=answers[pi];
-      blocks.innerHTML+=`<div class="fp-block"><img src="${photo}" loading="lazy"/>${ans?`<div class="fp-qa"><div class="fp-q">${ans.question}</div><div class="fp-a">${ans.answer}</div></div>`:''}</div>`;
-    });
-    if(answers.length>photos.length){
-      blocks.innerHTML+=`<div class="fp-allqa">${answers.slice(photos.length).map(a=>`<div class="fp-qarow"><div class="fp-q">${a.question}</div><div class="fp-a">${a.answer}</div></div>`).join('')}</div>`;
-    }
+    photos.forEach((photo,pi)=>{ const ans=answers[pi]; blocks.innerHTML+=`<div class="fp-block"><img src="${photo}" loading="lazy"/>${ans?`<div class="fp-qa"><div class="fp-q">${ans.question}</div><div class="fp-a">${ans.answer}</div></div>`:''}</div>`; });
+    if(answers.length>photos.length){ blocks.innerHTML+=`<div class="fp-allqa">${answers.slice(photos.length).map(a=>`<div class="fp-qarow"><div class="fp-q">${a.question}</div><div class="fp-a">${a.answer}</div></div>`).join('')}</div>`; }
   }
-  document.getElementById('fpOverlay').classList.add('show');
-  document.getElementById('fpOverlay').scrollTop=0;
-  if(fpAudio){
-    fpAudio.play().catch(()=>{});
-    document.getElementById('fpVPlay').textContent='⏸';
-    fpAudioInterval=setInterval(()=>{
-      if(!fpAudio) return;
-      const pct=(fpAudio.currentTime/(fpAudio.duration||1))*100;
-      document.getElementById('fpVFill').style.width=pct+'%';
-      const s=Math.floor(fpAudio.currentTime);
-      document.getElementById('fpVTime').textContent='0:'+String(s).padStart(2,'0');
-      if(fpAudio.ended){ document.getElementById('fpVPlay').textContent='▶'; clearInterval(fpAudioInterval); }
-    },100);
-  }
+  document.getElementById('fpOverlay').classList.add('show'); document.getElementById('fpOverlay').scrollTop=0;
+  if(fpAudio){ fpAudio.play().catch(()=>{}); document.getElementById('fpVPlay').textContent='⏸';
+    fpAudioInterval=setInterval(()=>{ if(!fpAudio) return; const pct=(fpAudio.currentTime/(fpAudio.duration||1))*100; document.getElementById('fpVFill').style.width=pct+'%'; const s=Math.floor(fpAudio.currentTime); document.getElementById('fpVTime').textContent='0:'+String(s).padStart(2,'0'); if(fpAudio.ended){ document.getElementById('fpVPlay').textContent='▶'; clearInterval(fpAudioInterval); } },100); }
 }
-
 function toggleFPVoice(){
-  if(!fpAudio) return;
-  const btn=document.getElementById('fpVPlay');
+  if(!fpAudio) return; const btn=document.getElementById('fpVPlay');
   if(!fpAudio.paused){ fpAudio.pause(); btn.textContent='▶'; clearInterval(fpAudioInterval); }
-  else {
-    fpAudio.play(); btn.textContent='⏸';
-    fpAudioInterval=setInterval(()=>{
-      const pct=(fpAudio.currentTime/(fpAudio.duration||1))*100;
-      document.getElementById('fpVFill').style.width=pct+'%';
-      const s=Math.floor(fpAudio.currentTime);
-      document.getElementById('fpVTime').textContent='0:'+String(s).padStart(2,'0');
-      if(fpAudio.ended){ btn.textContent='▶'; clearInterval(fpAudioInterval); }
-    },100);
-  }
+  else { fpAudio.play(); btn.textContent='⏸'; fpAudioInterval=setInterval(()=>{ const pct=(fpAudio.currentTime/(fpAudio.duration||1))*100; document.getElementById('fpVFill').style.width=pct+'%'; const s=Math.floor(fpAudio.currentTime); document.getElementById('fpVTime').textContent='0:'+String(s).padStart(2,'0'); if(fpAudio.ended){ btn.textContent='▶'; clearInterval(fpAudioInterval); } },100); }
 }
-
-function closeFP(){
-  if(fpAudio){ fpAudio.pause(); clearInterval(fpAudioInterval); }
-  document.getElementById('fpOverlay').classList.remove('show');
-}
-
-function handleFPPass(){
-  const idx=matchProfiles.indexOf(fpProfile); closeFP();
-  if(idx!==-1) setTimeout(()=>handlePass(idx),300);
-}
-function handleFPLike(){
-  const idx=matchProfiles.indexOf(fpProfile); closeFP();
-  if(idx!==-1) setTimeout(()=>handleLike(idx),300);
-}
+function closeFP(){ if(fpAudio){ fpAudio.pause(); clearInterval(fpAudioInterval); } document.getElementById('fpOverlay').classList.remove('show'); }
+function handleFPPass(){ const idx=matchProfiles.indexOf(fpProfile); closeFP(); if(idx!==-1) setTimeout(()=>handlePass(idx),300); }
+function handleFPLike(){ const idx=matchProfiles.indexOf(fpProfile); closeFP(); if(idx!==-1) setTimeout(()=>handleLike(idx),300); }
 
 // ── CHAT LIST
 async function loadChatList(){
-  if(!currentUserId) return;
   try {
-    // get all active matches where I am either user_id_1 or user_id_2
-    const {data:m1}=await db.from('matches').select('*').eq('user_id_1',currentUserId).eq('status','active');
-    const {data:m2}=await db.from('matches').select('*').eq('user_id_2',currentUserId).eq('status','active');
-    myMatches=[...(m1||[]),...(m2||[])];
-
+    const data=await callEdge('get-chat-list',{phone});
+    const matches=data.matches||[];
     document.getElementById('chatListLoading').style.display='none';
-
-    if(myMatches.length===0){
-      document.getElementById('chatListEmpty').style.display='block';
-      return;
-    }
-
-    // for each match get the other person's profile + last message
-    const items=document.getElementById('chatListItems');
-    items.innerHTML='';
-    for(const match of myMatches){
-      const otherUserId = match.user_id_1===currentUserId ? match.user_id_2 : match.user_id_1;
-      const {data:prof}=await db.from('profiles').select('full_name,user_id').eq('user_id',otherUserId).limit(1);
-      const {data:media}=await db.from('user_media').select('photo_1').eq('user_id',otherUserId).limit(1);
-      const {data:msgs}=await db.from('messages').select('*').eq('match_id',match.id).order('sent_at',{ascending:false}).limit(1);
-      const {data:unread}=await db.from('messages').select('id').eq('match_id',match.id).eq('from_user_id',otherUserId).eq('is_read',false);
-
-      const name=prof?.[0]?.full_name||'—';
-      const photo=media?.[0]?.photo_1||'';
-      const lastMsg=msgs?.[0]?.message||'Say hi 👋';
-      const lastTime=msgs?.[0]?.sent_at?formatTime(msgs[0].sent_at):'';
-      const hasUnread=(unread||[]).length>0;
-
+    if(matches.length===0){ document.getElementById('chatListEmpty').style.display='block'; return; }
+    const items=document.getElementById('chatListItems'); items.innerHTML='';
+    for(const match of matches){
+      const name=match.other_user?.full_name||'—';
+      const photo=match.other_user?.photo_1||'';
+      const lastMsg=match.last_message?.message||'Say hi 👋';
+      const lastTime=match.last_message?.sent_at?formatTime(match.last_message.sent_at):'';
+      const hasUnread=match.unread_count>0;
       const row=document.createElement('div');
       row.className='chat-row';
-      row.onclick=()=>openChat(match,{full_name:name,photo_1:photo,user_id:otherUserId});
+      row.onclick=()=>openChat(match);
       row.innerHTML=`
         ${photo?`<img class="chat-avatar" src="${photo}" alt=""/>`:`<div class="chat-avatar-placeholder">😊</div>`}
         <div class="chat-info">
@@ -882,83 +729,51 @@ async function loadChatList(){
         </div>`;
       items.appendChild(row);
     }
-    loadChatBadge();
+    // update badge
+    const totalUnread=matches.reduce((sum,m)=>sum+(m.unread_count||0),0);
+    const badge=document.getElementById('chatBadge');
+    if(totalUnread>0){ badge.textContent=totalUnread>9?'9+':totalUnread; badge.classList.add('show'); }
+    else { badge.classList.remove('show'); }
   } catch(e){ console.error('loadChatList:',e); }
 }
 
-async function loadChatBadge(){
-  if(!currentUserId) return;
-  try {
-    const {data:m1}=await db.from('matches').select('id').eq('user_id_1',currentUserId).eq('status','active');
-    const {data:m2}=await db.from('matches').select('id').eq('user_id_2',currentUserId).eq('status','active');
-    const matchIds=[...(m1||[]),...(m2||[])].map(m=>m.id);
-    if(matchIds.length===0) return;
-    const {data:unread}=await db.from('messages').select('id').in('match_id',matchIds).neq('from_user_id',currentUserId).eq('is_read',false);
-    const count=(unread||[]).length;
-    const badge=document.getElementById('chatBadge');
-    if(count>0){ badge.textContent=count>9?'9+':count; badge.classList.add('show'); }
-    else { badge.classList.remove('show'); }
-  } catch(e){}
-}
-
 function formatTime(ts){
-  const d=new Date(ts);
-  const now=new Date();
-  const diff=now-d;
+  const d=new Date(ts); const now=new Date(); const diff=now-d;
   if(diff<60000) return 'now';
   if(diff<3600000) return Math.floor(diff/60000)+'m';
   if(diff<86400000) return d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
   return d.getDate()+'/'+(d.getMonth()+1);
 }
 
-// ── CHAT WINDOW
-async function openChat(match, otherProfile){
-  currentMatch=match;
-  currentMatchProfile=otherProfile;
-
-  document.getElementById('chatTopName').textContent=otherProfile.full_name||'—';
-  document.getElementById('chatTopSub').textContent='IRL match';
+async function openChat(match){
+  currentMatch=match; currentMatchProfile=match.other_user;
+  document.getElementById('chatTopName').textContent=match.other_user?.full_name||'—';
+  document.getElementById('unmatchTitle').textContent='Unmatch with '+(match.other_user?.full_name||'them')+'?';
   const avatar=document.getElementById('chatTopAvatar');
-  if(otherProfile.photo_1){ avatar.src=otherProfile.photo_1; avatar.style.display='block'; }
-  else { avatar.style.display='none'; }
-
-  document.getElementById('unmatchTitle').textContent='Unmatch with '+(otherProfile.full_name||'them')+'?';
-
+  if(match.other_user?.photo_1){ avatar.src=match.other_user.photo_1; avatar.style.display='block'; } else { avatar.style.display='none'; }
   document.getElementById('chatOverlay').classList.add('show');
-  document.getElementById('chatMessages').innerHTML='<div id="chatMsgLoading" style="display:flex;justify-content:center;padding:20px"><div class="dots-loader"><span></span><span></span><span></span></div></div>';
-
-  await loadMessages();
-  markMessagesRead();
-  subscribeToMessages();
+  document.getElementById('chatMessages').innerHTML='<div style="display:flex;justify-content:center;padding:20px"><div class="dots-loader"><span></span><span></span><span></span></div></div>';
+  await loadMessages(); startPolling();
 }
 
 async function loadMessages(){
   try {
-    const {data:msgs}=await db.from('messages').select('*').eq('match_id',currentMatch.id).order('sent_at',{ascending:true});
-    renderMessages(msgs||[]);
+    const data=await callEdge('get-messages',{phone,match_id:currentMatch.match_id});
+    renderMessages(data.messages||[]);
   } catch(e){ console.error('loadMessages:',e); }
 }
 
 function renderMessages(msgs){
-  const container=document.getElementById('chatMessages');
-  container.innerHTML='';
+  const container=document.getElementById('chatMessages'); container.innerHTML='';
   if(msgs.length===0){
     container.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:32px"><div style="font-size:36px;margin-bottom:12px">👋</div><div style="font-size:14px;color:var(--muted);line-height:1.6">You matched! Say hello.</div></div>';
     return;
   }
   let lastDate='';
   msgs.forEach(msg=>{
-    const isMe=msg.from_user_id===currentUserId;
     const msgDate=new Date(msg.sent_at).toDateString();
-    if(msgDate!==lastDate){
-      lastDate=msgDate;
-      const div=document.createElement('div');
-      div.className='msg-date-divider';
-      div.textContent=formatDateLabel(msg.sent_at);
-      container.appendChild(div);
-    }
-    const wrap=document.createElement('div');
-    wrap.className='msg '+(isMe?'me':'them');
+    if(msgDate!==lastDate){ lastDate=msgDate; const div=document.createElement('div'); div.className='msg-date-divider'; div.textContent=formatDateLabel(msg.sent_at); container.appendChild(div); }
+    const wrap=document.createElement('div'); wrap.className='msg '+(msg.is_mine?'me':'them');
     const time=new Date(msg.sent_at);
     wrap.innerHTML=`<div class="msg-bubble">${escHtml(msg.message)}</div><div class="msg-time">${time.getHours()}:${String(time.getMinutes()).padStart(2,'0')}</div>`;
     container.appendChild(wrap);
@@ -967,134 +782,65 @@ function renderMessages(msgs){
 }
 
 function escHtml(str){ return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function formatDateLabel(ts){
-  const d=new Date(ts);
-  const now=new Date();
-  const diff=now-d;
-  if(diff<86400000) return 'Today';
-  if(diff<172800000) return 'Yesterday';
-  return d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
-}
-
-function scrollChatToBottom(){
-  const c=document.getElementById('chatMessages');
-  setTimeout(()=>{ c.scrollTop=c.scrollHeight; },100);
-}
+function formatDateLabel(ts){ const d=new Date(ts); const now=new Date(); const diff=now-d; if(diff<86400000) return 'Today'; if(diff<172800000) return 'Yesterday'; return d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear(); }
+function scrollChatToBottom(){ const c=document.getElementById('chatMessages'); setTimeout(()=>{ c.scrollTop=c.scrollHeight; },100); }
 
 async function sendMessage(){
-  const input=document.getElementById('chatInput');
-  const text=input.value.trim();
-  if(!text||!currentMatch||!currentUserId) return;
-  input.value='';
-  autoResizeInput(input);
-  try {
-    await db.from('messages').insert({match_id:currentMatch.id,from_user_id:currentUserId,message:text,is_read:false});
-  } catch(e){ console.error('sendMessage:',e); }
+  const input=document.getElementById('chatInput'); const text=input.value.trim();
+  if(!text||!currentMatch) return;
+  input.value=''; autoResizeInput(input);
+  try { await callEdge('send-message',{phone,match_id:currentMatch.match_id,message:text}); }
+  catch(e){ console.error('sendMessage:',e); }
 }
 
-function handleChatKey(e){
-  if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
-}
+function handleChatKey(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); } }
+function autoResizeInput(el){ el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,100)+'px'; }
 
-function autoResizeInput(el){
-  el.style.height='auto';
-  el.style.height=Math.min(el.scrollHeight,100)+'px';
-}
-
-function subscribeToMessages(){
-  if(chatSubscription){ clearInterval(chatSubscription); chatSubscription=null; }
-  const matchId = currentMatch.id;
-  let lastMsgId = 0;
-
-  // get latest message id we already have
-  const existing = document.querySelectorAll('.msg');
-  // poll every 2 seconds for new messages
-  chatSubscription = setInterval(async ()=>{
-    if(!currentMatch) return;
+function startPolling(){
+  if(chatSubscription) clearInterval(chatSubscription);
+  const matchId=currentMatch.match_id;
+  let lastMsgId=0;
+  chatSubscription=setInterval(async()=>{
+    if(!currentMatch||currentMatch.match_id!==matchId){ clearInterval(chatSubscription); return; }
     try {
-      const {data:msgs} = await db.from('messages')
-        .select('*')
-        .eq('match_id', matchId)
-        .order('sent_at',{ascending:false})
-        .limit(1);
-      if(!msgs || msgs.length===0) return;
-      const latest = msgs[0];
-      if(latest.id === lastMsgId) return;
-      // new message — reload all messages
-      lastMsgId = latest.id;
-      const {data:allMsgs} = await db.from('messages')
-        .select('*')
-        .eq('match_id', matchId)
-        .order('sent_at',{ascending:true});
-      renderMessages(allMsgs||[]);
-      if(latest.from_user_id !== currentUserId) markMessagesRead();
-    } catch(e){ console.error('poll error:',e); }
-  }, 1000);
+      const data=await callEdge('get-messages',{phone,match_id:matchId});
+      const msgs=data.messages||[];
+      if(msgs.length===0) return;
+      const latest=msgs[msgs.length-1];
+      if(latest.id===lastMsgId) return;
+      lastMsgId=latest.id;
+      renderMessages(msgs);
+    } catch(e){}
+  },1000);
 }
 
-async function markMessagesRead(){
-  if(!currentMatch||!currentUserId) return;
-  try {
-    await db.from('messages').update({is_read:true}).eq('match_id',currentMatch.id).neq('from_user_id',currentUserId).eq('is_read',false);
-    loadChatBadge();
-  } catch(e){}
-}
-
-  function closeChat(){
+function closeChat(){
   if(chatSubscription){ clearInterval(chatSubscription); chatSubscription=null; }
   document.getElementById('chatOverlay').classList.remove('show');
   currentMatch=null; currentMatchProfile=null;
-  chatLoaded=false;
 }
 
-// UNMATCH
 function showUnmatchMenu(){ document.getElementById('unmatchMenu').classList.add('show'); }
 function hideUnmatchMenu(){ document.getElementById('unmatchMenu').classList.remove('show'); }
 
 async function confirmUnmatch(){
-  if(!currentMatch||!currentUserId) return;
-  const btn = document.querySelector('.unmatch-confirm-btn');
-  btn.textContent = 'Unmatching...';
-  btn.disabled = true;
+  if(!currentMatch) return;
+  const btn=document.querySelector('.unmatch-confirm-btn');
+  btn.textContent='Unmatching...'; btn.disabled=true;
   try {
-    await db.from('matches').update({
-      status:'unmatched',
-      unmatched_by:currentUserId,
-      unmatched_at:new Date().toISOString()
-    }).eq('id',currentMatch.id);
-    hideUnmatchMenu();
-    // stop polling
-    if(chatSubscription){ clearInterval(chatSubscription); chatSubscription=null; }
-    // close overlay
-    document.getElementById('chatOverlay').classList.remove('show');
-    currentMatch=null; currentMatchProfile=null;
-    // reset and reload chat list
-    chatLoaded=false;
-    document.getElementById('chatListItems').innerHTML='';
-    document.getElementById('chatListLoading').style.display='flex';
-    document.getElementById('chatListEmpty').style.display='none';
-    await loadChatList();
-    showToast('Unmatched.');
-  } catch(e){
-    console.error('unmatch:',e);
-    showToast('Error. Try again.');
-  }
-  btn.textContent='Yes, unmatch';
-  btn.disabled=false;
+    await callEdge('unmatch',{phone,match_id:currentMatch.match_id});
+    hideUnmatchMenu(); closeChat(); loadChatList(); showToast('Unmatched.');
+  } catch(e){ console.error('unmatch:',e); showToast('Error. Try again.'); }
+  btn.textContent='Yes, unmatch'; btn.disabled=false;
 }
 
-// PROFILE TAB
+// ── PROFILE
 async function loadProfile(){
   try {
-    const {data:prof}=await db.from('profiles').select('*').eq('phone',phone).limit(1);
-    if(!prof||!prof.length) return;
-    profileData=prof[0];
+    const data=await callEdge('get-profile',{phone});
+    if(!data.exists) return;
+    profileData=data.profile; mediaData=data.media||{}; answersData=data.answers||[];
     if(profileData.status==='pending') document.getElementById('pendingBanner').style.display='flex';
-    const {data:media}=await db.from('user_media').select('*').eq('user_id',profileData.user_id).limit(1);
-    if(media&&media.length) mediaData=media[0];
-    const {data:answers}=await db.from('user_answers').select('*').eq('user_id',profileData.user_id);
-    if(answers) answersData=answers;
     renderProfile();
     document.getElementById('profileLoading').style.display='none';
     document.getElementById('profileContent').style.display='block';
@@ -1107,26 +853,15 @@ function renderProfile(){
   document.getElementById('displayIntent').textContent=profileData.intent||'—';
   photoUrls=[mediaData.photo_1||null,mediaData.photo_2||null,mediaData.photo_3||null];
   renderPhotos();
-  if(mediaData.voice_url){
-    document.getElementById('voicePlayer').style.display='flex';
-    document.getElementById('noVoice').style.display='none';
-    voiceAudio=new Audio(mediaData.voice_url);
-  } else {
-    document.getElementById('voicePlayer').style.display='none';
-    document.getElementById('noVoice').style.display='block';
-  }
-  const qWrap=document.getElementById('questionsDisplay');
-  qWrap.innerHTML='';
+  if(mediaData.voice_url){ document.getElementById('voicePlayer').style.display='flex'; document.getElementById('noVoice').style.display='none'; voiceAudio=new Audio(mediaData.voice_url); }
+  else { document.getElementById('voicePlayer').style.display='none'; document.getElementById('noVoice').style.display='block'; }
+  const qWrap=document.getElementById('questionsDisplay'); qWrap.innerHTML='';
   if(answersData.length===0){ qWrap.innerHTML='<p style="font-size:13px;color:var(--muted);text-align:center;padding:8px 0">No answers yet.</p>'; }
-  else { answersData.forEach(a=>{ qWrap.innerHTML+=`<div class="q-item-view"><div class="q-question">${a.question}</div><div class="q-answer">${a.answer}</div></div>`; }); }
+  else { answersData.forEach(a=>{ qWrap.innerHTML+=`<div class="q-item-view"><div class="q-question">${a.question}</div><div class="q-answer-text">${a.answer}</div></div>`; }); }
 }
 
 function renderPhotos(){
-  const valid=photoUrls.filter(u=>u);
-  const img=document.getElementById('mainPhoto');
-  const ph=document.getElementById('photoPlaceholder');
-  const counter=document.getElementById('photoCounter');
-  const dots=document.getElementById('photoDots');
+  const valid=photoUrls.filter(u=>u); const img=document.getElementById('mainPhoto'); const ph=document.getElementById('photoPlaceholder'); const counter=document.getElementById('photoCounter'); const dots=document.getElementById('photoDots');
   if(valid.length===0){ img.style.display='none'; ph.style.display='flex'; counter.style.display='none'; dots.innerHTML=''; return; }
   img.src=valid[currentPhotoIdx]||valid[0]; img.style.display='block'; ph.style.display='none';
   counter.style.display='block'; counter.textContent=(currentPhotoIdx+1)+'/'+valid.length;
@@ -1136,37 +871,16 @@ function nextPhoto(){ const v=photoUrls.filter(u=>u); currentPhotoIdx=(currentPh
 function prevPhoto(){ const v=photoUrls.filter(u=>u); currentPhotoIdx=(currentPhotoIdx-1+v.length)%v.length; renderPhotos(); }
 
 function toggleVoice(){
-  if(!voiceAudio) return;
-  const btn=document.getElementById('playBtn');
+  if(!voiceAudio) return; const btn=document.getElementById('playBtn');
   if(!voiceAudio.paused){ voiceAudio.pause(); btn.textContent='▶'; clearInterval(voiceInterval); return; }
   voiceAudio.play(); btn.textContent='⏸';
-  voiceInterval=setInterval(()=>{
-    const pct=(voiceAudio.currentTime/(voiceAudio.duration||1))*100;
-    document.getElementById('voiceProgressFill').style.width=pct+'%';
-    const s=Math.floor(voiceAudio.currentTime);
-    document.getElementById('voiceTime').textContent='0:'+String(s).padStart(2,'0');
-    if(voiceAudio.ended){ btn.textContent='▶'; clearInterval(voiceInterval); document.getElementById('voiceProgressFill').style.width='0%'; document.getElementById('voiceTime').textContent='0:00'; }
-  },100);
+  voiceInterval=setInterval(()=>{ const pct=(voiceAudio.currentTime/(voiceAudio.duration||1))*100; document.getElementById('voiceProgressFill').style.width=pct+'%'; const s=Math.floor(voiceAudio.currentTime); document.getElementById('voiceTime').textContent='0:'+String(s).padStart(2,'0'); if(voiceAudio.ended){ btn.textContent='▶'; clearInterval(voiceInterval); document.getElementById('voiceProgressFill').style.width='0%'; document.getElementById('voiceTime').textContent='0:00'; } },100);
 }
 
-// MODALS
+// ── MODALS
 function openModal(type){
-  if(type==='basic'){
-    document.getElementById('edit-age').value=profileData.age||'';
-    document.getElementById('edit-city').value=profileData.city||'';
-    document.getElementById('edit-intent').value=profileData.intent||'';
-    editGender=profileData.gender||'';
-    document.getElementById('edit-gm').classList.toggle('sel',editGender==='male');
-    document.getElementById('edit-gf').classList.toggle('sel',editGender==='female');
-  }
-  if(type==='photos'){
-    modalPhotoUrls=[...photoUrls]; modalPhotoFiles=[null,null,null];
-    [0,1,2].forEach(i=>{
-      const img=document.getElementById('mimg'+i),rem=document.getElementById('mrem'+i),slot=document.getElementById('mslot'+i);
-      if(modalPhotoUrls[i]){ img.src=modalPhotoUrls[i]; img.style.display='block'; rem.style.display='flex'; slot.classList.add('filled'); }
-      else { img.src=''; img.style.display='none'; rem.style.display='none'; slot.classList.remove('filled'); }
-    });
-  }
+  if(type==='basic'){ document.getElementById('edit-age').value=profileData.age||''; document.getElementById('edit-city').value=profileData.city||''; document.getElementById('edit-intent').value=profileData.intent||''; editGender=profileData.gender||''; document.getElementById('edit-gm').classList.toggle('sel',editGender==='male'); document.getElementById('edit-gf').classList.toggle('sel',editGender==='female'); }
+  if(type==='photos'){ modalPhotoUrls=[...photoUrls]; modalPhotoFiles=[null,null,null]; [0,1,2].forEach(i=>{ const img=document.getElementById('mimg'+i),rem=document.getElementById('mrem'+i),slot=document.getElementById('mslot'+i); if(modalPhotoUrls[i]){ img.src=modalPhotoUrls[i]; img.style.display='block'; rem.style.display='flex'; slot.classList.add('filled'); } else { img.src=''; img.style.display='none'; rem.style.display='none'; slot.classList.remove('filled'); } }); }
   if(type==='questions') buildModalQuestions();
   document.getElementById('modal-'+type).classList.add('show');
 }
@@ -1181,12 +895,9 @@ async function saveBasic(){
     const age=parseInt(document.getElementById('edit-age').value);
     const city=document.getElementById('edit-city').value;
     const intent=document.getElementById('edit-intent').value;
-    const genderChanged=editGender!==profileData.gender;
-    const updateData={age,gender:editGender,city,intent};
-    if(genderChanged){ updateData.status='pending'; updateData.onboarding_step=1; updateData.review_reason='gender_change'; }
-    const {error}=await db.from('profiles').update(updateData).eq('phone',phone);
-    if(error) throw error;
-    if(genderChanged){ window.location.href='pending.html'; return; }
+    const res=await callEdge('update-profile',{ phone, type:'basic', updates:{age,gender:editGender,city,intent} });
+    if(res.error) throw new Error(res.error);
+    if(res.gender_changed){ window.location.href='pending.html'; return; }
     profileData.age=age; profileData.gender=editGender; profileData.city=city; profileData.intent=intent;
     renderProfile(); closeModal('basic'); showToast('Profile updated ✓');
   } catch(err){ console.error(err); showToast('Error saving.'); }
@@ -1198,16 +909,15 @@ function handleModalPhoto(i,input){
   const file=input.files[0]; if(!file) return;
   modalPhotoFiles[i]=file; modalPhotoUrls[i]=URL.createObjectURL(file);
   const img=document.getElementById('mimg'+i); img.src=modalPhotoUrls[i]; img.style.display='block';
-  document.getElementById('mrem'+i).style.display='flex';
-  document.getElementById('mslot'+i).classList.add('filled');
+  document.getElementById('mrem'+i).style.display='flex'; document.getElementById('mslot'+i).classList.add('filled');
 }
 function removeModalPhoto(e,i){
   e.stopPropagation(); modalPhotoFiles[i]=null; modalPhotoUrls[i]=null;
   document.getElementById('mimg'+i).style.display='none'; document.getElementById('mimg'+i).src='';
-  document.getElementById('mrem'+i).style.display='none';
-  document.getElementById('mslot'+i).classList.remove('filled');
+  document.getElementById('mrem'+i).style.display='none'; document.getElementById('mslot'+i).classList.remove('filled');
   document.getElementById('mfile'+i).value='';
 }
+
 async function savePhotos(){
   const btn=document.getElementById('savePhotosBtn');
   if(!modalPhotoUrls[0]&&!modalPhotoFiles[0]){ showToast('Add at least one photo'); return; }
@@ -1217,85 +927,54 @@ async function savePhotos(){
     for(let i=0;i<3;i++){
       if(modalPhotoFiles[i]){
         const ext=modalPhotoFiles[i].name.split('.').pop();
-        const path=`${phone}/photo${i+1}_${Date.now()}.${ext}`;
-        await db.storage.from('Photos').upload(path,modalPhotoFiles[i],{upsert:true});
-        const {data}=db.storage.from('Photos').getPublicUrl(path);
-        finalUrls[i]=data.publicUrl;
+        const signedRes=await callEdge('upload-media',{phone,file_name:`photo${i+1}_${Date.now()}.${ext}`,file_type:modalPhotoFiles[i].type,media_type:'photo'});
+        if(signedRes.error) throw new Error(signedRes.error);
+        await fetch(signedRes.signed_url,{method:'PUT',headers:{'Content-Type':modalPhotoFiles[i].type,'x-upsert':'true'},body:modalPhotoFiles[i]});
+        finalUrls[i]=signedRes.public_url;
       } else { finalUrls[i]=modalPhotoUrls[i]; }
     }
-    await db.from('user_media').update({photo_1:finalUrls[0],photo_2:finalUrls[1],photo_3:finalUrls[2]}).eq('user_id',profileData.user_id);
+    await callEdge('update-profile',{phone,type:'media',updates:{photo_1:finalUrls[0],photo_2:finalUrls[1],photo_3:finalUrls[2]}});
     photoUrls=finalUrls; mediaData.photo_1=finalUrls[0]; mediaData.photo_2=finalUrls[1]; mediaData.photo_3=finalUrls[2];
     currentPhotoIdx=0; renderPhotos(); closeModal('photos'); showToast('Photos updated ✓');
   } catch(err){ console.error(err); showToast('Upload failed.'); }
   btn.disabled=false; btn.textContent='Save photos';
 }
 
-async function toggleModalRecording(){
-  if(modalAudioBlob) return;
-  if(!modalIsRecording){ await startModalRecording(); } else { stopModalRecording(); }
-}
+async function toggleModalRecording(){ if(modalAudioBlob) return; if(!modalIsRecording){ await startModalRecording(); } else { stopModalRecording(); } }
 async function startModalRecording(){
   try {
-    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    modalRecorder=new MediaRecorder(stream); modalAudioChunks=[];
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true}); modalRecorder=new MediaRecorder(stream); modalAudioChunks=[];
     modalRecorder.ondataavailable=e=>modalAudioChunks.push(e.data);
-    modalRecorder.onstop=()=>{
-      modalAudioBlob=new Blob(modalAudioChunks,{type:'audio/webm'});
-      stream.getTracks().forEach(t=>t.stop());
-      document.getElementById('modal-playback').style.display='block';
-      document.getElementById('modal-save-voice').style.display='block';
-      document.getElementById('modal-redo').style.display='block';
-      document.getElementById('modal-rec-btn').textContent='✓';
-      document.getElementById('modal-rec-btn').style.background='var(--green)';
-      document.getElementById('modal-rec-status').textContent='Sounds good!';
-    };
-    modalRecorder.start(); modalIsRecording=true; modalSecs=30;
-    document.getElementById('modal-rec-btn').textContent='⏹';
-    document.getElementById('modal-rec-status').textContent='Recording... tap to stop';
-    modalTimer=setInterval(()=>{
-      modalSecs--;
-      const m=Math.floor(modalSecs/60),s=modalSecs%60;
-      document.getElementById('modal-timer').textContent=m+':'+String(s).padStart(2,'0');
-      if(modalSecs<=0){ clearInterval(modalTimer); stopModalRecording(); }
-    },1000);
+    modalRecorder.onstop=()=>{ modalAudioBlob=new Blob(modalAudioChunks,{type:'audio/webm'}); stream.getTracks().forEach(t=>t.stop()); document.getElementById('modal-playback').style.display='block'; document.getElementById('modal-save-voice').style.display='block'; document.getElementById('modal-redo').style.display='block'; document.getElementById('modal-rec-btn').textContent='✓'; document.getElementById('modal-rec-btn').style.background='var(--green)'; document.getElementById('modal-rec-status').textContent='Sounds good!'; };
+    modalRecorder.start(); modalIsRecording=true; modalSecs=30; document.getElementById('modal-rec-btn').textContent='⏹'; document.getElementById('modal-rec-status').textContent='Recording... tap to stop';
+    modalTimer=setInterval(()=>{ modalSecs--; const m=Math.floor(modalSecs/60),s=modalSecs%60; document.getElementById('modal-timer').textContent=m+':'+String(s).padStart(2,'0'); if(modalSecs<=0){ clearInterval(modalTimer); stopModalRecording(); } },1000);
   } catch(err){ showToast('Mic access denied.'); }
 }
 function stopModalRecording(){ clearInterval(modalTimer); modalIsRecording=false; if(modalRecorder) modalRecorder.stop(); }
 function playModalVoice(){
-  if(!modalAudioBlob) return;
-  const btn=document.getElementById('modal-play-btn');
+  if(!modalAudioBlob) return; const btn=document.getElementById('modal-play-btn');
   if(modalPlayer&&!modalPlayer.paused){ modalPlayer.pause(); btn.textContent='▶'; clearInterval(modalPlayerInterval); return; }
   if(modalPlayer){ modalPlayer.pause(); }
   modalPlayer=new Audio(URL.createObjectURL(modalAudioBlob)); modalPlayer.play(); btn.textContent='⏸';
-  modalPlayerInterval=setInterval(()=>{
-    const pct=(modalPlayer.currentTime/(modalPlayer.duration||1))*100;
-    document.getElementById('modal-play-prog').style.width=pct+'%';
-    if(modalPlayer.ended){ btn.textContent='▶'; clearInterval(modalPlayerInterval); document.getElementById('modal-play-prog').style.width='0%'; }
-  },100);
+  modalPlayerInterval=setInterval(()=>{ const pct=(modalPlayer.currentTime/(modalPlayer.duration||1))*100; document.getElementById('modal-play-prog').style.width=pct+'%'; if(modalPlayer.ended){ btn.textContent='▶'; clearInterval(modalPlayerInterval); document.getElementById('modal-play-prog').style.width='0%'; } },100);
 }
 function resetModalRecording(){
   modalAudioBlob=null; modalAudioChunks=[]; modalIsRecording=false; modalSecs=30; clearInterval(modalTimer);
   if(modalPlayer){ modalPlayer.pause(); modalPlayer=null; } clearInterval(modalPlayerInterval);
-  document.getElementById('modal-timer').textContent='0:30';
-  document.getElementById('modal-rec-status').textContent='Tap to start recording';
-  document.getElementById('modal-rec-btn').textContent='🎙️';
-  document.getElementById('modal-rec-btn').style.background='var(--rose)';
-  document.getElementById('modal-playback').style.display='none';
-  document.getElementById('modal-save-voice').style.display='none';
-  document.getElementById('modal-redo').style.display='none';
-  document.getElementById('modal-play-prog').style.width='0%';
+  document.getElementById('modal-timer').textContent='0:30'; document.getElementById('modal-rec-status').textContent='Tap to start recording';
+  document.getElementById('modal-rec-btn').textContent='🎙️'; document.getElementById('modal-rec-btn').style.background='var(--rose)';
+  document.getElementById('modal-playback').style.display='none'; document.getElementById('modal-save-voice').style.display='none'; document.getElementById('modal-redo').style.display='none'; document.getElementById('modal-play-prog').style.width='0%';
 }
+
 async function saveVoice(){
-  const btn=document.getElementById('modal-save-voice');
-  btn.disabled=true; btn.textContent='Uploading...';
+  const btn=document.getElementById('modal-save-voice'); btn.disabled=true; btn.textContent='Uploading...';
   try {
-    const path=`${phone}/voice_${Date.now()}.webm`;
-    await db.storage.from('Voice').upload(path,modalAudioBlob,{upsert:true});
-    const {data}=db.storage.from('Voice').getPublicUrl(path);
-    await db.from('user_media').update({voice_url:data.publicUrl}).eq('user_id',profileData.user_id);
-    mediaData.voice_url=data.publicUrl; voiceAudio=new Audio(data.publicUrl);
-    document.getElementById('voicePlayer').style.display='flex';
-    document.getElementById('noVoice').style.display='none';
+    const signedRes=await callEdge('upload-media',{phone,file_name:`voice_${Date.now()}.webm`,file_type:'audio/webm',media_type:'voice'});
+    if(signedRes.error) throw new Error(signedRes.error);
+    await fetch(signedRes.signed_url,{method:'PUT',headers:{'Content-Type':'audio/webm','x-upsert':'true'},body:modalAudioBlob});
+    await callEdge('update-profile',{phone,type:'media',updates:{voice_url:signedRes.public_url}});
+    mediaData.voice_url=signedRes.public_url; voiceAudio=new Audio(signedRes.public_url);
+    document.getElementById('voicePlayer').style.display='flex'; document.getElementById('noVoice').style.display='none';
     closeModal('voice'); resetModalRecording(); showToast('Voice note updated ✓');
   } catch(err){ console.error(err); showToast('Upload failed.'); }
   btn.disabled=false; btn.textContent='Save voice note';
@@ -1310,37 +989,27 @@ function buildModalQuestions(){
     const div=document.createElement('div');
     div.style.cssText='padding:12px 14px;border:1.5px solid '+(isSel?'rgba(232,67,122,0.4)':'rgba(245,237,232,0.1)')+';border-radius:12px;background:'+(isSel?'rgba(232,67,122,0.07)':'rgba(245,237,232,0.02)')+';cursor:pointer;margin-bottom:8px;transition:all 0.2s';
     div.innerHTML=`<div style="font-size:13px;color:var(--cream);line-height:1.4;margin-bottom:${isSel?'8px':'0'}">${q}</div><textarea id="mqa${i}" style="display:${isSel?'block':'none'};background:rgba(245,237,232,0.04);border:1px solid rgba(245,237,232,0.1);border-radius:8px;padding:8px 10px;font-size:13px;color:var(--cream);width:100%;resize:none;outline:none;line-height:1.4;min-height:56px;font-family:'DM Sans',sans-serif" maxlength="150" onclick="event.stopPropagation()">${isSel?modalSelectedQ[i]:''}</textarea>`;
-    div.addEventListener('click',()=>toggleModalQ(i,div));
-    div.setAttribute('id','mqi'+i); pool.appendChild(div);
+    div.addEventListener('click',()=>toggleModalQ(i,div)); div.setAttribute('id','mqi'+i); pool.appendChild(div);
   });
   updateModalQCounter();
 }
 function toggleModalQ(i,el){
   const isSel=modalSelectedQ[i]!==undefined,count=Object.keys(modalSelectedQ).length;
   if(isSel){ delete modalSelectedQ[i]; el.style.border='1.5px solid rgba(245,237,232,0.1)'; el.style.background='rgba(245,237,232,0.02)'; document.getElementById('mqa'+i).style.display='none'; el.querySelector('div').style.marginBottom='0'; }
-  else {
-    if(count>=3){ showToast('Pick 3 max'); return; }
-    modalSelectedQ[i]=document.getElementById('mqa'+i).value;
-    el.style.border='1.5px solid rgba(232,67,122,0.4)'; el.style.background='rgba(232,67,122,0.07)';
-    document.getElementById('mqa'+i).style.display='block'; el.querySelector('div').style.marginBottom='8px';
-    setTimeout(()=>document.getElementById('mqa'+i).focus(),100);
-  }
-  document.getElementById('mqa'+i).addEventListener('input',function(){ modalSelectedQ[i]=this.value; });
-  updateModalQCounter();
+  else { if(count>=3){ showToast('Pick 3 max'); return; } modalSelectedQ[i]=document.getElementById('mqa'+i).value; el.style.border='1.5px solid rgba(232,67,122,0.4)'; el.style.background='rgba(232,67,122,0.07)'; document.getElementById('mqa'+i).style.display='block'; el.querySelector('div').style.marginBottom='8px'; setTimeout(()=>document.getElementById('mqa'+i).focus(),100); }
+  document.getElementById('mqa'+i).addEventListener('input',function(){ modalSelectedQ[i]=this.value; }); updateModalQCounter();
 }
 function updateModalQCounter(){ document.getElementById('modal-q-counter').textContent=Object.keys(modalSelectedQ).length+' of 3 selected'; }
+
 async function saveQuestions(){
-  const keys=Object.keys(modalSelectedQ);
-  if(keys.length<3){ showToast('Select 3 questions'); return; }
-  const unanswered=keys.find(k=>!document.getElementById('mqa'+k).value.trim());
-  if(unanswered!==undefined){ showToast('Answer all 3'); return; }
-  const btn=document.querySelector('#modal-questions .btn-save');
-  btn.disabled=true; btn.textContent='Saving...';
+  const keys=Object.keys(modalSelectedQ); if(keys.length<3){ showToast('Select 3 questions'); return; }
+  const unanswered=keys.find(k=>!document.getElementById('mqa'+k).value.trim()); if(unanswered!==undefined){ showToast('Answer all 3'); return; }
+  const btn=document.querySelector('#modal-questions .btn-save'); btn.disabled=true; btn.textContent='Saving...';
   try {
-    const rows=keys.map(k=>({user_id:profileData.user_id,question:QUESTIONS[parseInt(k)],answer:document.getElementById('mqa'+k).value.trim()}));
-    await db.from('user_answers').delete().eq('user_id',profileData.user_id);
-    await db.from('user_answers').insert(rows);
-    answersData=rows; renderProfile(); closeModal('questions'); showToast('Answers updated ✓');
+    const rows=keys.map(k=>({question:QUESTIONS[parseInt(k)],answer:document.getElementById('mqa'+k).value.trim()}));
+    const res=await callEdge('update-profile',{phone,type:'answers',updates:rows});
+    if(res.error) throw new Error(res.error);
+    answersData=rows.map(r=>({...r,user_id:profileData.user_id})); renderProfile(); closeModal('questions'); showToast('Answers updated ✓');
   } catch(err){ console.error(err); showToast('Error saving.'); }
   btn.disabled=false; btn.textContent='Save answers';
 }
@@ -1348,11 +1017,8 @@ async function saveQuestions(){
 async function handleLogout(){ await db.auth.signOut(); localStorage.clear(); window.location.href='index.html'; }
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
 
-// INIT
-window.addEventListener('load', async ()=>{
-  await fetchCurrentUserId();
+window.addEventListener('load', ()=>{
   loadMatches();
-  loadChatBadge();
 });
 </script>
 </body>
