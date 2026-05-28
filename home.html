@@ -492,17 +492,10 @@ const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const { createClient } = window.supabase;
 const db = createClient('https://sxpbdkamagunvktdkogw.supabase.co', ANON);
 
-async function callEdge(fn, body, usePhone=false){
-  let token = ANON;
-  // for sensitive functions use JWT session token
-  if(!usePhone){
-    const { data: { session } } = await db.auth.getSession();
-   if(session?.access_token) token = session.access_token;
-    else { window.location.href='linkedin.html'; return; }
-  }
+async function callEdge(fn, body){
   const res = await fetch(EDGE+'/'+fn, {
     method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+ANON},
     body: JSON.stringify(body)
   });
   return res.json();
@@ -554,7 +547,7 @@ function switchTab(tab){
 // ── MATCH
 async function loadMatches(){
   try {
-    const data = await callEdge('get-matches', {});
+    const data = await callEdge('get-matches', {phone});
     matchProfiles=data.profiles||[];
     document.getElementById('matchLoading').style.display='none';
     if(matchProfiles.length===0){ document.getElementById('matchEmpty').style.display='flex'; }
@@ -627,7 +620,7 @@ async function handlePass(i){
   if(passBtn) passBtn.disabled=true; if(likeBtn) likeBtn.disabled=true;
   const p=matchProfiles[i]; lastPassedProfile={profile:p,index:i};
   try {
-    const res=await callEdge('record-interaction',{to_user_id:p.user_id,action:'pass'});
+    const res=await callEdge('record-interaction',{phone,to_user_id:p.user_id,action:'pass'});
     if(res.error) console.error('pass error:',res.error);
   } catch(e){ console.error(e); }
   document.getElementById('undoText').textContent='Passed on '+(p.full_name||'them');
@@ -645,7 +638,7 @@ async function handleLike(i){
   if(card) card.appendChild(anim);
   setTimeout(()=>{ if(anim.parentNode) anim.parentNode.removeChild(anim); },800);
   try {
-    const res=await callEdge('record-interaction',{to_user_id:p.user_id,action:'like'});
+    const res=await callEdge('record-interaction',{phone,to_user_id:p.user_id,action:'like'});
     if(res.error){ console.error('like error:',res.error); }
     else if(res.matched){ setTimeout(()=>showToast('🎉 It\'s a match! Go to Chat.'),600); }
     else { setTimeout(()=>showToast('♥ Liked!'),400); }
@@ -665,7 +658,7 @@ async function undoLastPass(){
   // Use a direct approach: the undo deletes via get-profile to get user_id then delete
   // For simplicity, reload matches on undo
   try {
-    const profileRes=await callEdge('get-profile',{phone},true);
+    const profileRes=await callEdge('get-profile',{phone});
     if(profileRes.profile){
       // Re-enable buttons
       const undoPass=document.getElementById('pass-'+lastPassedProfile.index);
@@ -710,7 +703,7 @@ function handleFPLike(){ const idx=matchProfiles.indexOf(fpProfile); closeFP(); 
 // ── CHAT LIST
 async function loadChatList(){
   try {
-    const data=await callEdge('get-chat-list',{});
+    const data=await callEdge('get-chat-list',{phone});
     const matches=data.matches||[];
     document.getElementById('chatListLoading').style.display='none';
     if(matches.length===0){ document.getElementById('chatListEmpty').style.display='block'; return; }
@@ -765,7 +758,7 @@ async function openChat(match){
 
 async function loadMessages(){
   try {
-    const data=await callEdge('get-messages',{match_id:currentMatch.match_id});
+    const data=await callEdge('get-messages',{phone,match_id:currentMatch.match_id});
     renderMessages(data.messages||[]);
   } catch(e){ console.error('loadMessages:',e); }
 }
@@ -796,7 +789,7 @@ async function sendMessage(){
   const input=document.getElementById('chatInput'); const text=input.value.trim();
   if(!text||!currentMatch) return;
   input.value=''; autoResizeInput(input);
-  try { await callEdge('send-message',{match_id:currentMatch.match_id,message:text}); }
+  try { await callEdge('send-message',{phone,match_id:currentMatch.match_id,message:text}); }
   catch(e){ console.error('sendMessage:',e); }
 }
 
@@ -810,7 +803,7 @@ function startPolling(){
   chatSubscription=setInterval(async()=>{
     if(!currentMatch||currentMatch.match_id!==matchId){ clearInterval(chatSubscription); return; }
     try {
-      const data=await callEdge('get-messages',{match_id:matchId});
+      const data=await callEdge('get-messages',{phone,match_id:matchId});
       const msgs=data.messages||[];
       if(msgs.length===0) return;
       const latest=msgs[msgs.length-1];
@@ -835,7 +828,7 @@ async function confirmUnmatch(){
   const btn=document.querySelector('.unmatch-confirm-btn');
   btn.textContent='Unmatching...'; btn.disabled=true;
   try {
-    await callEdge('unmatch',{match_id:currentMatch.match_id});
+    await callEdge('unmatch',{phone,match_id:currentMatch.match_id});
     hideUnmatchMenu(); closeChat(); loadChatList(); showToast('Unmatched.');
   } catch(e){ console.error('unmatch:',e); showToast('Error. Try again.'); }
   btn.textContent='Yes, unmatch'; btn.disabled=false;
@@ -844,7 +837,7 @@ async function confirmUnmatch(){
 // ── PROFILE
 async function loadProfile(){
   try {
-    const data=await callEdge('get-profile',{phone},true);
+    const data=await callEdge('get-profile',{phone});
     if(!data.exists) return;
     profileData=data.profile; mediaData=data.media||{}; answersData=data.answers||[];
     if(profileData.status==='pending') document.getElementById('pendingBanner').style.display='flex';
@@ -902,7 +895,7 @@ async function saveBasic(){
     const age=parseInt(document.getElementById('edit-age').value);
     const city=document.getElementById('edit-city').value;
     const intent=document.getElementById('edit-intent').value;
-    const res=await callEdge('update-profile',{ type:'basic', updates:{age,gender:editGender,city,intent} });
+    const res=await callEdge('update-profile',{ phone, type:'basic', updates:{age,gender:editGender,city,intent} });
     if(res.error) throw new Error(res.error);
     if(res.gender_changed){ window.location.href='pending.html'; return; }
     profileData.age=age; profileData.gender=editGender; profileData.city=city; profileData.intent=intent;
@@ -934,13 +927,13 @@ async function savePhotos(){
     for(let i=0;i<3;i++){
       if(modalPhotoFiles[i]){
         const ext=modalPhotoFiles[i].name.split('.').pop();
-        const signedRes=await callEdge('upload-media',{file_name:`photo${i+1}_${Date.now()}.${ext}`,file_type:modalPhotoFiles[i].type,media_type:'photo'});
+        const signedRes=await callEdge('upload-media',{phone,file_name:`photo${i+1}_${Date.now()}.${ext}`,file_type:modalPhotoFiles[i].type,media_type:'photo'});
         if(signedRes.error) throw new Error(signedRes.error);
         await fetch(signedRes.signed_url,{method:'PUT',headers:{'Content-Type':modalPhotoFiles[i].type,'x-upsert':'true'},body:modalPhotoFiles[i]});
         finalUrls[i]=signedRes.public_url;
       } else { finalUrls[i]=modalPhotoUrls[i]; }
     }
-    await callEdge('update-profile',{type:'media',updates:{photo_1:finalUrls[0],photo_2:finalUrls[1],photo_3:finalUrls[2]}});
+    await callEdge('update-profile',{phone,type:'media',updates:{photo_1:finalUrls[0],photo_2:finalUrls[1],photo_3:finalUrls[2]}});
     photoUrls=finalUrls; mediaData.photo_1=finalUrls[0]; mediaData.photo_2=finalUrls[1]; mediaData.photo_3=finalUrls[2];
     currentPhotoIdx=0; renderPhotos(); closeModal('photos'); showToast('Photos updated ✓');
   } catch(err){ console.error(err); showToast('Upload failed.'); }
@@ -976,10 +969,10 @@ function resetModalRecording(){
 async function saveVoice(){
   const btn=document.getElementById('modal-save-voice'); btn.disabled=true; btn.textContent='Uploading...';
   try {
-    const signedRes=await callEdge('upload-media',{file_name:`voice_${Date.now()}.webm`,file_type:'audio/webm',media_type:'voice'});
+    const signedRes=await callEdge('upload-media',{phone,file_name:`voice_${Date.now()}.webm`,file_type:'audio/webm',media_type:'voice'});
     if(signedRes.error) throw new Error(signedRes.error);
     await fetch(signedRes.signed_url,{method:'PUT',headers:{'Content-Type':'audio/webm','x-upsert':'true'},body:modalAudioBlob});
-    await callEdge('update-profile',{type:'media',updates:{voice_url:signedRes.public_url}});
+    await callEdge('update-profile',{phone,type:'media',updates:{voice_url:signedRes.public_url}});
     mediaData.voice_url=signedRes.public_url; voiceAudio=new Audio(signedRes.public_url);
     document.getElementById('voicePlayer').style.display='flex'; document.getElementById('noVoice').style.display='none';
     closeModal('voice'); resetModalRecording(); showToast('Voice note updated ✓');
@@ -1014,7 +1007,7 @@ async function saveQuestions(){
   const btn=document.querySelector('#modal-questions .btn-save'); btn.disabled=true; btn.textContent='Saving...';
   try {
     const rows=keys.map(k=>({question:QUESTIONS[parseInt(k)],answer:document.getElementById('mqa'+k).value.trim()}));
-    const res=await callEdge('update-profile',{type:'answers',updates:rows});
+    const res=await callEdge('update-profile',{phone,type:'answers',updates:rows});
     if(res.error) throw new Error(res.error);
     answersData=rows.map(r=>({...r,user_id:profileData.user_id})); renderProfile(); closeModal('questions'); showToast('Answers updated ✓');
   } catch(err){ console.error(err); showToast('Error saving.'); }
@@ -1024,18 +1017,7 @@ async function saveQuestions(){
 async function handleLogout(){ await db.auth.signOut(); localStorage.clear(); window.location.href='index.html'; }
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
 
-window.addEventListener('load', async ()=>{
-  // check for valid session first
-  const { data: { session } } = await db.auth.getSession();
-  if(!session){
-    // try to refresh
-    const { data: { session: refreshed } } = await db.auth.refreshSession();
-    if(!refreshed){
-      // session expired — send back to LinkedIn to re-auth
-      window.location.href = 'linkedin.html';
-      return;
-    }
-  }
+window.addEventListener('load', ()=>{
   loadMatches();
 });
 </script>
