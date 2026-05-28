@@ -497,8 +497,8 @@ async function callEdge(fn, body, usePhone=false){
   // for sensitive functions use JWT session token
   if(!usePhone){
     const { data: { session } } = await db.auth.getSession();
-    if(session?.access_token) token = session.access_token;
-    else { window.location.href='index.html'; return; }
+   if(session?.access_token) token = session.access_token;
+    else { window.location.href='linkedin.html'; return; }
   }
   const res = await fetch(EDGE+'/'+fn, {
     method:'POST',
@@ -1024,7 +1024,18 @@ async function saveQuestions(){
 async function handleLogout(){ await db.auth.signOut(); localStorage.clear(); window.location.href='index.html'; }
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
 
-window.addEventListener('load', ()=>{
+window.addEventListener('load', async ()=>{
+  // check for valid session first
+  const { data: { session } } = await db.auth.getSession();
+  if(!session){
+    // try to refresh
+    const { data: { session: refreshed } } = await db.auth.refreshSession();
+    if(!refreshed){
+      // session expired — send back to LinkedIn to re-auth
+      window.location.href = 'linkedin.html';
+      return;
+    }
+  }
   loadMatches();
 });
 </script>
