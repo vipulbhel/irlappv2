@@ -97,40 +97,63 @@ async function callEdge(fn, body){
   return res.json();
 }
 
-// use onAuthStateChange as single source of truth
-// it fires INITIAL_SESSION on load — so we don't need a separate load event
+// safety timeout — if nothing happens in 5 seconds show login card
+const safetyTimer = setTimeout(()=>{ console.log('safety timeout fired'); showLoginCard(); }, 5000);
+
 db.auth.onAuthStateChange(async (event, session) => {
   console.log('auth event:', event, 'session:', !!session);
+
   if(event === 'INITIAL_SESSION'){
+    clearTimeout(safetyTimer);
     if(session){
       await handleSession(session);
     } else {
       showLoginCard();
     }
   } else if(event === 'SIGNED_IN' && session){
+    clearTimeout(safetyTimer);
     await handleSession(session);
   }
 });
 
 async function handleSession(session){
+  console.log('handleSession called, user:', session.user?.id);
   try {
-    // check if profile exists
-    const data = await callEdge('get-profile', {});
+    const token = session.access_token;
+    console.log('calling get-profile...');
+    const res = await fetch('https://sxpbdkamagunvktdkogw.supabase.co/functions/v1/get-profile', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json', 'Authorization':'Bearer '+token},
+      body: JSON.stringify({})
+    });
+    console.log('get-profile status:', res.status);
+    const data = await res.json();
+    console.log('get-profile data:', data);
+
+    if(data.error){ console.error('get-profile error:', data.error); showLoginCard(); return; }
+
     if(!data.exists){
-      // new user — create profile
-      const created = await callEdge('create-profile', {});
+      console.log('new user — creating profile...');
+      const res2 = await fetch('https://sxpbdkamagunvktdkogw.supabase.co/functions/v1/create-profile', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json', 'Authorization':'Bearer '+token},
+        body: JSON.stringify({})
+      });
+      const created = await res2.json();
+      console.log('create-profile data:', created);
       if(created.error){ showError(created.error); showLoginCard(); return; }
       window.location.href = 'linkedin.html';
     } else {
       redirectByStatus(data.profile);
     }
   } catch(e){
-    console.error(e);
+    console.error('handleSession error:', e);
     showLoginCard();
   }
 }
 
 function redirectByStatus(profile){
+  console.log('redirectByStatus:', profile.status, 'step:', profile.onboarding_step, 'li:', profile.linkedin_verified);
   if(profile.status === 'approved'){ window.location.href = 'home.html'; return; }
   if(profile.status === 'rejected'){ showError('Your profile was not approved. Email hello@getirl.in'); showLoginCard(); return; }
   if(profile.review_reason === 'gender_change'){ window.location.href = 'pending.html'; return; }
