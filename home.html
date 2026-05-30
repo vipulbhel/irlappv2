@@ -836,7 +836,17 @@ async function confirmUnmatch(){
   btn.textContent='Unmatching...'; btn.disabled=true;
   try {
     await callEdge('unmatch',{match_id:currentMatch.match_id});
-    hideUnmatchMenu(); closeChat(); loadChatList(); showToast('Unmatched.');
+    hideUnmatchMenu();
+    // close chat first
+    if(chatSubscription){ clearInterval(chatSubscription); chatSubscription=null; }
+    document.getElementById('chatOverlay').classList.remove('show');
+    currentMatch=null; currentMatchProfile=null;
+    // clear and reload chat list fresh
+    document.getElementById('chatListItems').innerHTML='';
+    document.getElementById('chatListLoading').style.display='flex';
+    document.getElementById('chatListEmpty').style.display='none';
+    await loadChatList();
+    showToast('Unmatched.');
   } catch(e){ console.error('unmatch:',e); showToast('Error. Try again.'); }
   btn.textContent='Yes, unmatch'; btn.disabled=false;
 }
