@@ -130,8 +130,19 @@ async function init(){
   const errorCode = params.get('error') || hashParams.get('error');
   const errorDesc = params.get('error_description') || hashParams.get('error_description');
 
-  if(errorCode){
+ if(errorCode){
     console.log('OAuth error:', errorCode, errorDesc);
+    // still populate user info before showing error
+    const { data: { session: errSession } } = await db.auth.getSession();
+    if(errSession){
+      const u = errSession.user;
+      const meta = u.user_metadata || {};
+      document.getElementById('googleName').textContent = meta.full_name || meta.name || '—';
+      document.getElementById('googleEmail').textContent = u.email || '—';
+      if(meta.avatar_url || meta.picture){
+        document.getElementById('googleAvatar').innerHTML = `<img src="${meta.avatar_url||meta.picture}"/>`;
+      }
+    }
     document.getElementById('pageLoader').style.display = 'none';
     document.getElementById('mainCard').style.display = 'block';
     if(errorDesc && errorDesc.toLowerCase().includes('already linked')){
