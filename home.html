@@ -823,6 +823,8 @@ function closeChat(){
   if(chatSubscription){ clearInterval(chatSubscription); chatSubscription=null; }
   document.getElementById('chatOverlay').classList.remove('show');
   currentMatch=null; currentMatchProfile=null;
+  // refresh chat list and badge after closing chat
+  loadChatList();
 }
 
 function showUnmatchMenu(){ document.getElementById('unmatchMenu').classList.add('show'); }
