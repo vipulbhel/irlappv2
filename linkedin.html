@@ -218,21 +218,29 @@ async function handleLinkedInLinked(session, linkedinIdentity){
     const liName = linkedinIdentity.identity_data?.full_name || linkedinIdentity.identity_data?.name || '';
 
     // save linkedin_verified to profile
-    const updateRes = await fetch(EDGE + '/update-profile', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
-      body: JSON.stringify({
-        type: 'basic',
-updates: {
-  linkedin_verified: true,
-  linkedin_id: linkedinIdentity.identity_data?.sub || linkedinIdentity.id,
-  linkedin_url: linkedinIdentity.identity_data?.name || '',
-  onboarding_step: 1
+const updateRes = await fetch(EDGE + '/update-profile', {
+  method: 'POST',
+  headers: {'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+  body: JSON.stringify({
+    type: 'basic',
+    updates: {
+      linkedin_verified: true,
+      linkedin_id: linkedinIdentity.identity_data?.sub || linkedinIdentity.id,
+      linkedin_url: linkedinIdentity.identity_data?.name || '',
+      onboarding_step: 1
+    }
+  })
+});
+const updateData = await updateRes.json();
+console.log('update-profile result:', updateData);
+
+// check for duplicate LinkedIn error
+if(updateData.error){
+  // unlink the LinkedIn identity since it's already in use
+  try { await db.auth.unlinkIdentity(linkedinIdentity); } catch(e){}
+  showError('This LinkedIn account is already linked to another IRL profile. Please use a different LinkedIn account.');
+  return;
 }
-      })
-    });
-    const updateData = await updateRes.json();
-    console.log('update-profile result:', updateData);
 
     // show success
     document.getElementById('linkedinBtn').style.display = 'none';
