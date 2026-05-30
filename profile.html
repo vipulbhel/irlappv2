@@ -106,6 +106,7 @@ input[type="file"]{display:none}
     <div class="prog-seg" id="seg2"><div class="prog-seg-fill"></div></div>
     <div class="prog-seg" id="seg3"><div class="prog-seg-fill"></div></div>
     <div class="prog-seg" id="seg4"><div class="prog-seg-fill"></div></div>
+    <div class="prog-seg" id="seg5"><div class="prog-seg-fill"></div></div>
   </div>
 </div>
 
@@ -138,6 +139,10 @@ input[type="file"]{display:none}
       <option value="Bengaluru">Bengaluru</option>
       <option value="Pune">Pune</option>
     </select>
+  </div>
+  <div class="field">
+    <label class="field-label">Bio <span style="color:var(--muted2);font-size:10px;letter-spacing:0;text-transform:none;margin-left:4px">· optional, shown on your card</span></label>
+    <textarea id="bioInput" placeholder="A line or two about yourself..." maxlength="120" style="min-height:70px"></textarea>
   </div>
 </div>
 
@@ -178,8 +183,16 @@ input[type="file"]{display:none}
   <p class="photo-note">Only shown to verified IRL users. <b>Real photos only.</b></p>
 </div>
 
-<!-- STEP 5 -->
+<!-- STEP 5: Interests -->
 <div class="page" id="page4">
+  <span class="page-emoji">🎯</span>
+  <h1 class="page-title">What are you into?</h1>
+  <p class="page-sub">Pick up to <b>6 interests</b>. We'll use these for events too.</p>
+  <div id="interestGrid" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"></div>
+</div>
+
+<!-- STEP 6: Voice -->
+<div class="page" id="page5">
   <span class="page-emoji">🎙️</span>
   <h1 class="page-title">Let them hear you.</h1>
   <p class="page-sub">30 seconds. This is what makes IRL different.</p>
@@ -229,11 +242,12 @@ async function callEdge(fn, body){
 let currentStep = 0;
 let selectedGender = '';
 let selectedIntent = '';
+let selectedInterests = new Set();
 let photoFiles = [null, null, null];
 let mediaRecorder = null, audioChunks = [], audioBlob = null;
 let recordingTimer = null, secondsLeft = 30, isRecording = false;
 let audioPlayer = null, playInterval = null;
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 const QUESTIONS = [
   "What does your ideal Sunday look like?",
   "What are you actually looking for right now, honestly?",
@@ -267,6 +281,7 @@ window.addEventListener('load', async () => {
   document.getElementById('nameInput').value = name;
   document.getElementById('ageInput').addEventListener('input', function(){ this.value=this.value.replace(/\D/g,'').slice(0,2); checkStep0(); });
   document.getElementById('cityInput').addEventListener('change', checkStep0);
+  buildInterests();
   buildQuestions();
   updateProgress(0);
   updateCTA();
@@ -312,12 +327,43 @@ function updateCTA(){
       ok = ks.length === 3 && ks.every(k => (selectedQuestions[k]||'').trim().length > 0);
       break;
     case 3: ok = photoFiles[0] !== null; break;
-    case 4: ok = audioBlob !== null; break;
+    case 4: ok = true; break; // interests optional
+    case 5: ok = audioBlob !== null; break;
   }
   btn.disabled = !ok;
 }
 
 // QUESTIONS
+const INTERESTS = ['💪 Gym','🏃 Running','🧘 Yoga','🎾 Tennis','🏸 Badminton','🏏 Cricket','⚽ Football','🏊 Swimming','🚴 Cycling','🥾 Hiking','✈️ Travel','👨‍🍳 Cooking','🎵 Music','📸 Photography','🎮 Gaming','🐕 Pets','🚬 Smoking','🍺 Drinking'];
+
+function buildInterests(){
+  const grid = document.getElementById('interestGrid');
+  grid.innerHTML = '';
+  INTERESTS.forEach(interest => {
+    const btn = document.createElement('button');
+    btn.textContent = interest;
+    btn.style.cssText = 'padding:10px 14px;border:1.5px solid rgba(245,237,232,0.12);border-radius:100px;background:rgba(245,237,232,0.04);color:rgba(245,237,232,0.6);font-family:DM Sans,sans-serif;font-size:13px;cursor:pointer;transition:all 0.15s;-webkit-tap-highlight-color:transparent';
+    btn.onclick = () => toggleInterest(interest, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function toggleInterest(interest, btn){
+  if(selectedInterests.has(interest)){
+    selectedInterests.delete(interest);
+    btn.style.borderColor = 'rgba(245,237,232,0.12)';
+    btn.style.background = 'rgba(245,237,232,0.04)';
+    btn.style.color = 'rgba(245,237,232,0.6)';
+  } else {
+    if(selectedInterests.size >= 6){ showError('Pick up to 6.'); return; }
+    selectedInterests.add(interest);
+    btn.style.borderColor = 'var(--rose)';
+    btn.style.background = 'rgba(232,67,122,0.12)';
+    btn.style.color = 'var(--cream)';
+  }
+  hideError();
+}
+
 function buildQuestions(){
   const pool = document.getElementById('qPool');
   pool.innerHTML = '';
@@ -453,7 +499,8 @@ async function handleNext(){
       if(ks.some(k=>!(selectedQuestions[k]||'').trim())){ showError('Please answer all 3 questions.'); return; }
       break;
     case 3: if(!photoFiles[0]){ showError('Please add at least one photo.'); return; } break;
-    case 4: if(!audioBlob){ showError('Please record your voice note.'); return; } break;
+    case 4: break; // interests optional
+    case 5: if(!audioBlob){ showError('Please record your voice note.'); return; } break;
   }
   if(currentStep < TOTAL_STEPS-1){ goToStep(currentStep+1); return; }
   await submitProfile();
@@ -470,6 +517,8 @@ async function submitProfile(){
       gender: selectedGender,
       city: document.getElementById('cityInput').value,
       intent: selectedIntent,
+      bio: document.getElementById('bioInput').value.trim(),
+      interests: Array.from(selectedInterests),
       onboarding_step: 2
     }});
     if(!res1||res1.error) throw new Error(res1?.error||'Profile update failed');

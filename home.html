@@ -27,33 +27,37 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
 .nav-badge{position:absolute;top:6px;right:calc(50% - 16px);background:var(--rose);color:white;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:none;align-items:center;justify-content:center}
 .nav-badge.show{display:flex}
 #tab-match{overflow:hidden;position:relative}
-.match-feed{position:absolute;inset:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scroll-behavior:smooth;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.match-feed{position:absolute;inset:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .match-feed::-webkit-scrollbar{display:none}
-.match-card{flex:0 0 100%;scroll-snap-align:start;position:relative;height:100%;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
-.mc-photo{position:relative;flex:0 0 55%;overflow:hidden;cursor:pointer}
-.mc-photo img{width:100%;height:100%;object-fit:cover}
-.mc-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(13,8,16,0.9) 0%,rgba(13,8,16,0.1) 55%,transparent 100%)}
-.mc-info{position:absolute;bottom:14px;left:16px;right:16px}
-.mc-name{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:-0.5px;color:white;margin-bottom:5px}
-.mc-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.mc-city{font-size:13px;color:rgba(245,237,232,0.7)}
-.mc-intent{background:rgba(232,67,122,0.2);border:1px solid rgba(232,67,122,0.35);border-radius:100px;padding:3px 12px;font-size:11px;color:var(--rose2);font-weight:500}
-.mc-hint{position:absolute;top:14px;right:14px;background:rgba(13,8,16,0.6);backdrop-filter:blur(8px);border:1px solid rgba(245,237,232,0.1);border-radius:100px;padding:5px 12px;font-size:11px;color:rgba(245,237,232,0.7)}
-.mc-bottom{flex:1;display:flex;flex-direction:column;background:var(--card);border-top:1px solid var(--border);overflow:hidden;min-height:0}
-.mc-voice{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:rgba(232,67,122,0.04);flex-shrink:0}
-.mc-play{width:36px;height:36px;border-radius:50%;background:var(--rose);border:none;color:white;font-size:14px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.mc-voice-inner{flex:1}
-.mc-voice-label{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
-.mc-waves{display:flex;align-items:center;gap:2px;height:20px}
-.mc-wave{width:2px;border-radius:2px;background:var(--rose);opacity:0.4}
+.match-card{flex:0 0 100%;scroll-snap-align:start;position:relative;height:100%;overflow:hidden;background:var(--bg)}
+.mc-photo-full{position:absolute;inset:0}
+.mc-photo-full img{width:100%;height:100%;object-fit:cover}
+.mc-gradient-top{position:absolute;top:0;left:0;right:0;height:140px;background:linear-gradient(to bottom,rgba(13,8,16,0.75) 0%,transparent 100%)}
+.mc-gradient-bottom{position:absolute;bottom:0;left:0;right:0;height:68%;background:linear-gradient(to top,rgba(13,8,16,1) 0%,rgba(13,8,16,0.92) 35%,rgba(13,8,16,0.6) 60%,transparent 100%)}
+.mc-topbar{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:16px 20px;z-index:5}
+.mc-counter-pill{background:rgba(13,8,16,0.55);backdrop-filter:blur(8px);border:1px solid rgba(245,237,232,0.1);border-radius:100px;padding:5px 14px;font-size:11px;color:rgba(245,237,232,0.75);font-family:'DM Sans',sans-serif}
+.mc-content{position:absolute;bottom:0;left:0;right:0;padding:20px 20px 24px;z-index:5;display:flex;flex-direction:column;gap:0}
+.mc-name-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.mc-name{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;letter-spacing:-1px;color:white;line-height:1}
+.mc-intent{background:rgba(232,67,122,0.2);border:1px solid rgba(232,67,122,0.4);border-radius:100px;padding:4px 12px;font-size:11px;color:var(--rose2);font-weight:600;flex-shrink:0}
+.mc-city{font-size:13px;color:rgba(245,237,232,0.55);margin-bottom:10px}
+.mc-bio{font-size:13px;color:rgba(245,237,232,0.8);line-height:1.55;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mc-interests{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.mc-interest-pill{background:rgba(245,237,232,0.07);border:1px solid rgba(245,237,232,0.12);border-radius:100px;padding:4px 10px;font-size:11px;color:rgba(245,237,232,0.6)}
+.mc-voice{display:flex;align-items:center;gap:10px;background:rgba(245,237,232,0.06);border:1px solid rgba(245,237,232,0.1);border-radius:14px;padding:10px 14px;margin-bottom:14px}
+.mc-play{width:34px;height:34px;border-radius:50%;background:var(--rose);border:none;color:white;font-size:13px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.mc-voice-inner{flex:1;min-width:0}
+.mc-voice-label{font-size:9px;color:rgba(245,237,232,0.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.mc-waves{display:flex;align-items:center;gap:2px;height:16px}
+.mc-wave{width:2px;border-radius:2px;background:var(--rose);opacity:0.45}
 .mc-wave.playing{animation:mcwave 1s ease-in-out infinite}
-.mc-wave:nth-child(1){height:5px;animation-delay:0s}.mc-wave:nth-child(2){height:10px;animation-delay:0.1s}.mc-wave:nth-child(3){height:16px;animation-delay:0.2s}.mc-wave:nth-child(4){height:20px;animation-delay:0.3s}.mc-wave:nth-child(5){height:14px;animation-delay:0.4s}.mc-wave:nth-child(6){height:8px;animation-delay:0.5s}.mc-wave:nth-child(7){height:5px;animation-delay:0.6s}
+.mc-wave:nth-child(1){height:4px;animation-delay:0s}.mc-wave:nth-child(2){height:8px;animation-delay:0.1s}.mc-wave:nth-child(3){height:14px;animation-delay:0.2s}.mc-wave:nth-child(4){height:16px;animation-delay:0.3s}.mc-wave:nth-child(5){height:10px;animation-delay:0.4s}.mc-wave:nth-child(6){height:6px;animation-delay:0.5s}.mc-wave:nth-child(7){height:4px;animation-delay:0.6s}
 @keyframes mcwave{0%,100%{transform:scaleY(0.4);opacity:0.4}50%{transform:scaleY(1);opacity:1}}
-.mc-vtime{font-size:11px;color:var(--muted);flex-shrink:0}
-.mc-counter{font-size:11px;color:var(--muted2);text-align:center;padding:8px 0 2px;letter-spacing:0.5px;flex-shrink:0}
-.mc-actions{display:flex;gap:10px;padding:12px 16px;flex-shrink:0}
-.mc-pass{flex:1;padding:13px;border-radius:13px;border:1.5px solid rgba(245,237,232,0.1);background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s}
-.mc-like{flex:2;padding:13px;border-radius:13px;border:none;background:linear-gradient(135deg,#E8437A,#C4306A);color:white;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 6px 20px rgba(232,67,122,0.3);transition:all 0.2s}
+.mc-vtime{font-size:11px;color:rgba(245,237,232,0.4);flex-shrink:0}
+.mc-actions{display:flex;gap:10px}
+.mc-pass{flex:1;padding:15px;border-radius:14px;border:1.5px solid rgba(245,237,232,0.12);background:rgba(245,237,232,0.04);color:rgba(245,237,232,0.5);font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s}
+.mc-like{flex:2;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,#E8437A,#C4306A);color:white;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 6px 20px rgba(232,67,122,0.35);transition:all 0.2s}
+.mc-view-profile{width:100%;padding:0;border:none;background:none;color:rgba(245,237,232,0.35);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;text-align:center;margin-bottom:6px;letter-spacing:0.3px}
 .mc-pass:disabled,.mc-like:disabled{opacity:0.4;cursor:not-allowed}
 .match-center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px 32px}
 .fp-overlay{position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;display:none;scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -539,14 +543,12 @@ function switchTab(tab){
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('nav-'+tab).classList.add('active');
   if(tab==='profile'&&!profileLoaded){ profileLoaded=true; loadProfile(); }
-if(tab==='chat'){
-  // only reload if not already loaded
-  if(document.getElementById('chatListItems').innerHTML===''){
+  if(tab==='chat'){
+    document.getElementById('chatListItems').innerHTML='';
     document.getElementById('chatListLoading').style.display='flex';
     document.getElementById('chatListEmpty').style.display='none';
     loadChatList();
   }
-}
 }
 
 // ── MATCH
@@ -569,19 +571,32 @@ function renderMatchFeed(){
   feed.innerHTML='';
   matchProfiles.forEach((p,i)=>{
     const photos=[p.photo_1,p.photo_2,p.photo_3].filter(Boolean);
+    const interests=Array.isArray(p.interests)?p.interests:[];
     const card=document.createElement('div');
     card.className='match-card'; card.id='mc-'+i;
+
+    const interestPills=interests.slice(0,4).map(it=>`<span class="mc-interest-pill">${it}</span>`).join('');
+    const bioHtml=p.bio?`<div class="mc-bio">${p.bio}</div>`:'';
+    const interestsHtml=interestPills?`<div class="mc-interests">${interestPills}</div>`:'';
+
     card.innerHTML=`
-      <div class="mc-photo" onclick="openFP(${i})">
+      <div class="mc-photo-full">
         <img src="${photos[0]||''}" loading="lazy"/>
-        <div class="mc-overlay"></div>
-        <div class="mc-info">
-          <div class="mc-name">${p.full_name||'—'}, ${p.age||'—'}</div>
-          <div class="mc-meta"><span class="mc-city">${p.city||'—'}</span><div class="mc-intent">${p.intent||'—'}</div></div>
-        </div>
-        <div class="mc-hint">Tap for full profile</div>
       </div>
-      <div class="mc-bottom">
+      <div class="mc-gradient-top"></div>
+      <div class="mc-gradient-bottom"></div>
+      <div class="mc-topbar">
+        <div class="logo">ir<span style="color:var(--rose)">l</span></div>
+        <div class="mc-counter-pill">${i+1} of ${matchProfiles.length}</div>
+      </div>
+      <div class="mc-content">
+        <div class="mc-name-row">
+          <div class="mc-name">${p.full_name||'—'}, ${p.age||'—'}</div>
+          <div class="mc-intent">${p.intent||'—'}</div>
+        </div>
+        <div class="mc-city">📍 ${p.city||'—'}</div>
+        ${bioHtml}
+        ${interestsHtml}
         <div class="mc-voice">
           <button class="mc-play" id="mcplay-${i}" onclick="event.stopPropagation();toggleCardVoice(${i})">▶</button>
           <div class="mc-voice-inner">
@@ -593,7 +608,7 @@ function renderMatchFeed(){
           </div>
           <div class="mc-vtime">0:28</div>
         </div>
-        <div class="mc-counter">${i+1} of ${matchProfiles.length}</div>
+        <button class="mc-view-profile" onclick="openFP(${i})">View full profile ↑</button>
         <div class="mc-actions">
           <button class="mc-pass" id="pass-${i}" onclick="handlePass(${i})">✕ Pass</button>
           <button class="mc-like" id="like-${i}" onclick="handleLike(${i})">♥ Like</button>
@@ -823,8 +838,6 @@ function closeChat(){
   if(chatSubscription){ clearInterval(chatSubscription); chatSubscription=null; }
   document.getElementById('chatOverlay').classList.remove('show');
   currentMatch=null; currentMatchProfile=null;
-  // refresh chat list and badge after closing chat
-  loadChatList();
 }
 
 function showUnmatchMenu(){ document.getElementById('unmatchMenu').classList.add('show'); }
@@ -836,17 +849,7 @@ async function confirmUnmatch(){
   btn.textContent='Unmatching...'; btn.disabled=true;
   try {
     await callEdge('unmatch',{match_id:currentMatch.match_id});
-    hideUnmatchMenu();
-    // close chat first
-    if(chatSubscription){ clearInterval(chatSubscription); chatSubscription=null; }
-    document.getElementById('chatOverlay').classList.remove('show');
-    currentMatch=null; currentMatchProfile=null;
-    // clear and reload chat list fresh
-    document.getElementById('chatListItems').innerHTML='';
-    document.getElementById('chatListLoading').style.display='flex';
-    document.getElementById('chatListEmpty').style.display='none';
-    await loadChatList();
-    showToast('Unmatched.');
+    hideUnmatchMenu(); closeChat(); loadChatList(); showToast('Unmatched.');
   } catch(e){ console.error('unmatch:',e); showToast('Error. Try again.'); }
   btn.textContent='Yes, unmatch'; btn.disabled=false;
 }
@@ -1039,7 +1042,6 @@ window.addEventListener('load', async ()=>{
   if(!session){ window.location.href='index.html'; return; }
   sessionUser = session.user;
   loadMatches();
-  loadChatList(); // preload chat list in background
 });
 </script>
 </body>
