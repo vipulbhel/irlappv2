@@ -97,25 +97,17 @@ async function callEdge(fn, body){
   return res.json();
 }
 
-// handle OAuth callback + session check on load
-window.addEventListener('load', async () => {
-  try {
-    await new Promise(r => setTimeout(r, 500));
-    const { data: { session } } = await db.auth.getSession();
+// use onAuthStateChange as single source of truth
+// it fires INITIAL_SESSION on load — so we don't need a separate load event
+db.auth.onAuthStateChange(async (event, session) => {
+  console.log('auth event:', event, 'session:', !!session);
+  if(event === 'INITIAL_SESSION'){
     if(session){
       await handleSession(session);
     } else {
       showLoginCard();
     }
-  } catch(e){
-    console.error(e);
-    showLoginCard();
-  }
-});
-
-// also listen for auth state change (catches OAuth redirect)
-db.auth.onAuthStateChange(async (event, session) => {
-  if(event === 'SIGNED_IN' && session){
+  } else if(event === 'SIGNED_IN' && session){
     await handleSession(session);
   }
 });
