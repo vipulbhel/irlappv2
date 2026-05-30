@@ -252,12 +252,27 @@ let selectedQuestions={};
 window.addEventListener('load', async () => {
   const { data: { session } } = await db.auth.getSession();
   if(!session){ window.location.href='index.html'; return; }
-  const user = session.user;
-  const meta = user.user_metadata || {};
-  const name = meta.full_name || meta.name || '';
+
+  // use getUser for fresh data including LinkedIn identity
+  const { data: { user } } = await db.auth.getUser();
+  const meta = (user || session.user).user_metadata || {};
+
+  // try Google name first, then LinkedIn identity name
+  let name = meta.full_name || meta.name || '';
+  if(!name){
+    const identities = (user || session.user).identities || [];
+    const liIdentity = identities.find(i => i.provider === 'linkedin_oidc');
+    if(liIdentity) name = liIdentity.identity_data?.name || liIdentity.identity_data?.full_name || '';
+    const gIdentity = identities.find(i => i.provider === 'google');
+    if(!name && gIdentity) name = gIdentity.identity_data?.name || gIdentity.identity_data?.full_name || '';
+  }
+
   document.getElementById('nameInput').value = name;
+  document.getElementById('ageInput').addEventListener('input',function(){ this.value=this.value.replace(/[^0-9]/g,'').slice(0,2); updateCTA(); });
+  document.getElementById('cityInput').addEventListener('change', updateCTA);
   buildQuestions();
   updateProgress(0);
+  updateCTA();
 });
 
 function buildQuestions(){
@@ -277,8 +292,40 @@ function toggleQuestion(i){
   else { if(count>=3){ showError('Pick 3 max.'); return; } item.classList.add('selected'); selectedQuestions[i]=''; setTimeout(()=>document.getElementById('qa'+i).focus(),100); }
   hideError(); updateQCounter();
 }
-function updateQCounter(){ document.getElementById('qCounter').textContent=Object.keys(selectedQuestions).length+' of 3 selected'; }
-function selectGender(g){ selectedGender=g; document.getElementById('genderM').classList.toggle('selected',g==='male'); document.getElementById('genderF').classList.toggle('selected',g==='female'); hideError(); }
+function updateQCounter(){ document.getElementById('qCounter').textContent=Object.keys(selectedQuestions).length+' of 3 selected'; updateCTA(); }
+
+function updateCTA(){
+  const btn = document.getElementById('nextBtn');
+  if(!btn) return;
+  let enabled = false;
+  switch(currentStep){
+    case 0:
+      const name = document.getElementById('nameInput')?.value.trim();
+      const age = parseInt(document.getElementById('ageInput')?.value);
+      const city = document.getElementById('cityInput')?.value;
+      enabled = !!(name && age>=18 && age<=45 && selectedGender && city);
+      break;
+    case 1: enabled = !!selectedIntent; break;
+    case 2:
+      const keys = Object.keys(selectedQuestions);
+      enabled = keys.length===3 && keys.every(k=>document.getElementById('qa'+k)?.value.trim());
+      break;
+    case 3: enabled = !!photoFiles[0]; break;
+    case 4: enabled = !!audioBlob; break;
+    default: enabled = true;
+  }
+  btn.disabled = !enabled;
+  btn.style.opacity = enabled ? '1' : '0.4';
+}
+function selectGender(g){
+  selectedGender=g;
+  document.getElementById('genderM').classList.toggle('selected',g==='male');
+  document.getElementById('genderF').classList.toggle('selected',g==='female');
+  // force repaint for iOS
+  document.getElementById('genderM').style.opacity='0.99';
+  setTimeout(()=>{ document.getElementById('genderM').style.opacity=''; document.getElementById('genderF').style.opacity=''; },50);
+  hideError(); updateCTA();
+}
 function selectIntent(i){ selectedIntent=i; ['S','C','O'].forEach(x=>document.getElementById('intent'+x).classList.remove('selected')); document.getElementById('intent'+i[0]).classList.add('selected'); hideError(); setTimeout(()=>goToStep(currentStep+1),400); }
 function triggerUpload(i){ document.getElementById('fileInput'+i).click(); }
 function handlePhoto(i,input){
@@ -286,7 +333,7 @@ function handlePhoto(i,input){
   if(file.size>5*1024*1024){ showError('Photo must be under 5MB.'); return; }
   photoFiles[i]=file;
   document.getElementById('img'+i).src=URL.createObjectURL(file); document.getElementById('img'+i).style.display='block';
-  document.getElementById('rem'+i).style.display='flex'; document.getElementById('slot'+i).classList.add('filled'); hideError();
+  document.getElementById('rem'+i).style.display='flex'; document.getElementById('slot'+i).classList.add('filled'); hideError(); updateCTA();
 }
 function removePhoto(e,i){
   e.stopPropagation(); photoFiles[i]=null; document.getElementById('img'+i).style.display='none'; document.getElementById('img'+i).src='';
@@ -307,7 +354,7 @@ async function startRecording(){
 function stopRecording(){ clearInterval(recordingTimer); isRecording=false; if(mediaRecorder) mediaRecorder.stop(); document.getElementById('voiceBox').classList.remove('recording'); document.getElementById('waveform').style.display='none'; }
 function showDoneState(){
   document.getElementById('voiceBox').classList.add('done'); document.getElementById('voiceBtn').className='voice-btn done'; document.getElementById('voiceBtn').textContent='✓';
-  document.getElementById('voiceStatus').textContent='Sounds good!'; document.getElementById('voiceTimer').style.color='var(--green)'; document.getElementById('playbackSection').style.display='block';
+  document.getElementById('voiceStatus').textContent='Sounds good!'; document.getElementById('voiceTimer').style.color='var(--green)'; document.getElementById('playbackSection').style.display='block'; updateCTA();
 }
 function playVoice(){
   if(!audioBlob) return; const btn=document.getElementById('playBtn');
@@ -333,6 +380,7 @@ function goToStep(step){
   document.getElementById('page'+currentStep).classList.remove('active'); currentStep=step;
   document.getElementById('page'+currentStep).classList.add('active'); updateProgress(step); hideError(); window.scrollTo(0,0);
   document.getElementById('backBtn').style.display=step>0?'block':'none';
+  updateCTA();
 }
 
 function validateStep(step){
