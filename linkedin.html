@@ -126,12 +126,14 @@ let processed = false; // prevent double processing
 async function init(){
   try {
     // always refresh session first to get latest identities
-    const { data: { session }, error } = await db.auth.getSession();
-    console.log('linkedin page session:', !!session, 'error:', error);
+const { data: { session }, error } = await db.auth.getSession();
+console.log('linkedin page session:', !!session, 'error:', error);
 
-    if(!session){ window.location.href = 'index.html'; return; }
+if(!session){ window.location.href = 'index.html'; return; }
 
-    const user = session.user;
+// getUser makes fresh network call — gets latest identities after LinkedIn link
+const { data: { user: freshUser } } = await db.auth.getUser();
+const user = freshUser || session.user;
     const meta = user.user_metadata || {};
 
     // populate Google user info
