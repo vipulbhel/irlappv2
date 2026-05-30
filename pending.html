@@ -6,19 +6,16 @@
 <title>IRL — You're in the queue</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0D0810;--card:#160F1A;--rose:#E8437A;--rose2:#FF6B9D;--cream:#F5EDE8;--muted:#8A7A82;--muted2:#3A3040;--border:rgba(245,237,232,0.08)}
 html,body{height:100%}
 body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden}
 .amb1{position:fixed;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(232,67,122,0.1) 0%,transparent 65%);pointer-events:none;z-index:0}
-.amb2{position:fixed;bottom:-80px;left:-80px;width:300px;height:300px;background:radial-gradient(circle,rgba(120,40,90,0.07) 0%,transparent 65%);pointer-events:none;z-index:0}
 .card{width:100%;max-width:400px;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px 28px;position:relative;z-index:1;animation:fadeup 0.6s ease forwards;text-align:center}
 .logo{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-1px;margin-bottom:32px}
 .logo span{color:var(--rose)}
-.position-wrap{margin-bottom:8px}
-.position-label{font-size:11px;color:var(--muted2);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
-.position-num{font-family:'Syne',sans-serif;font-size:72px;font-weight:800;color:var(--rose);letter-spacing:-4px;line-height:1}
 .card-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.5px;margin-bottom:10px;margin-top:16px}
 .card-sub{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:32px;font-weight:300}
 .card-sub b{color:var(--cream)}
@@ -33,10 +30,9 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
 @keyframes pulseglow{0%,100%{box-shadow:0 0 0 0 rgba(232,67,122,0.4)}50%{box-shadow:0 0 0 6px rgba(232,67,122,0)}}
 .step-label{font-size:13px;font-weight:500;color:var(--cream)}
 .status-step.pending-step .step-label{color:var(--muted2)}
-.whatsapp-note{background:rgba(37,211,102,0.06);border:1px solid rgba(37,211,102,0.15);border-radius:12px;padding:14px 16px;display:flex;align-items:flex-start;gap:10px;margin-bottom:24px;text-align:left}
-.whatsapp-note span{font-size:20px;flex-shrink:0}
-.whatsapp-note p{font-size:12px;color:var(--muted);line-height:1.5}
-.whatsapp-note p b{color:var(--cream)}
+.email-note{background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.15);border-radius:12px;padding:14px 16px;display:flex;align-items:flex-start;gap:10px;margin-bottom:24px;text-align:left}
+.email-note p{font-size:12px;color:var(--muted);line-height:1.5}
+.email-note p b{color:var(--cream)}
 .action-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
 .btn-share{width:100%;background:linear-gradient(135deg,#E8437A,#C4306A);border:none;border-radius:13px;padding:16px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-insta{width:100%;background:rgba(245,237,232,0.04);border:1px solid rgba(245,237,232,0.12);border-radius:13px;padding:16px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--cream);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
@@ -47,60 +43,62 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
 </head>
 <body>
 <div class="amb1"></div>
-<div class="amb2"></div>
 <div class="card">
   <div class="logo">ir<span>l</span></div>
-  <div class="position-wrap">
-    <div class="position-label">Your position</div>
-    <div class="position-num" id="positionNum">#—</div>
-  </div>
   <h1 class="card-title">You're in the queue 🔥</h1>
-  <p class="card-sub">Our team is reviewing your profile.<br><b>Usually takes less than 24 hours.</b><br>We'll notify you the moment you're in.</p>
+  <p class="card-sub">Our team is reviewing your profile.<br><b>Usually takes less than 24 hours.</b></p>
   <div class="status-steps">
-    <div class="status-step done"><div class="step-icon">✓</div><div class="step-label">Phone verified</div></div>
-    <div class="status-step done"><div class="step-icon">✓</div><div class="step-label">LinkedIn connected</div></div>
+    <div class="status-step done"><div class="step-icon">✓</div><div class="step-label">Google verified</div></div>
+    <div class="status-step done" id="linkedinStep"><div class="step-icon">✓</div><div class="step-label">LinkedIn submitted</div></div>
     <div class="status-step active"><div class="step-icon">⏳</div><div class="step-label">Profile under review</div></div>
     <div class="status-step pending-step"><div class="step-icon">→</div><div class="step-label">Access granted</div></div>
   </div>
-  <div class="whatsapp-note">
-    <span>💬</span>
-    <p>We'll send you a <b>WhatsApp message</b> on your registered number the moment your profile is approved.</p>
+  <div class="email-note">
+    <span style="font-size:20px;flex-shrink:0">📧</span>
+    <p>We'll send you an <b>email</b> the moment your profile is approved. Check your inbox.</p>
   </div>
   <div class="action-btns">
     <button class="btn-share" onclick="shareApp()">🔗 Invite a friend</button>
     <a class="btn-insta" href="https://instagram.com/getirl.in" target="_blank">📸 Follow us on Instagram</a>
   </div>
-  <p class="footer-note">Questions? Reach us at <a href="mailto:hello@getirl.in">hello@getirl.in</a></p>
+  <p class="footer-note">Questions? <a href="mailto:hello@getirl.in">hello@getirl.in</a></p>
 </div>
 
 <script>
-const EDGE = 'https://sxpbdkamagunvktdkogw.supabase.co/functions/v1';
+const { createClient } = window.supabase;
+const SUPABASE_URL = 'https://sxpbdkamagunvktdkogw.supabase.co';
 const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4cGJka2FtYWd1bnZrdGRrb2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDc3NDUsImV4cCI6MjA5NDU4Mzc0NX0.rTQeSH2dWSLP0IxwewvvEn3qxIbRQcCMZVjpr_0_LJ8';
+const EDGE = SUPABASE_URL + '/functions/v1';
+const db = createClient(SUPABASE_URL, ANON);
 
 async function callEdge(fn, body){
+  const { data: { session } } = await db.auth.getSession();
+  const token = session?.access_token;
+  if(!token){ window.location.href='index.html'; return; }
   const res = await fetch(EDGE+'/'+fn, {
     method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+ANON},
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
     body: JSON.stringify(body)
   });
   return res.json();
 }
 
-const phone = localStorage.getItem('irl_phone');
-if(!phone) window.location.href='index.html';
-
 window.addEventListener('load', async () => {
+  const { data: { session } } = await db.auth.getSession();
+  if(!session){ window.location.href='index.html'; return; }
   try {
-    const data = await callEdge('get-profile', { phone });
-    if(!data.exists) return;
-    const user = data.profile;
-    if(user.status==='approved'){ window.location.href='home.html'; return; }
-    document.getElementById('positionNum').textContent = '#—';
-  } catch(err){ console.error(err); }
+    const data = await callEdge('get-profile', {});
+    if(!data.exists){ window.location.href='index.html'; return; }
+    if(data.profile.status === 'approved'){ window.location.href='home.html'; return; }
+    if(!data.profile.linkedin_url){
+      document.getElementById('linkedinStep').className='status-step pending-step';
+      document.getElementById('linkedinStep').querySelector('.step-icon').textContent='→';
+    }
+  } catch(e){ console.error(e); }
 });
 
 function shareApp(){
-  const text = "I just joined IRL — India's new dating experience. Verified profiles, real events, actually different. Get early access 👇";
+  const text = "I just joined IRL — India's new dating experience. Verified, voice-first, real people. Get early access 👇";
   const url = 'https://irlappv2.vercel.app';
   if(navigator.share){ navigator.share({title:'IRL',text,url}); }
   else { navigator.clipboard.writeText(text+'\n'+url); alert('Link copied!'); }
