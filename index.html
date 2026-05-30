@@ -100,6 +100,7 @@ async function callEdge(fn, body){
 // handle OAuth callback + session check on load
 window.addEventListener('load', async () => {
   try {
+    await new Promise(r => setTimeout(r, 500));
     const { data: { session } } = await db.auth.getSession();
     if(session){
       await handleSession(session);
