@@ -322,10 +322,10 @@ function updateCTA(){
       ok = name.length > 0 && age >= 18 && age <= 45 && selectedGender !== '' && city !== '';
       break;
     case 1: ok = selectedIntent !== ''; break;
-    case 2:
-      const ks = Object.keys(selectedQuestions);
-      ok = ks.length === 3 && ks.every(k => (selectedQuestions[k]||'').trim().length > 0);
-      break;
+case 2:
+  const ks = Object.keys(selectedQuestions);
+  ok = ks.length === 3 && ks.every(k => (document.getElementById('qa'+k)?.value||'').trim().length > 0);
+  break;
     case 3: ok = photoFiles[0] !== null; break;
     case 4: ok = true; break; // interests optional
     case 5: ok = audioBlob !== null; break;
