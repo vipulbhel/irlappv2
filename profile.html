@@ -6,6 +6,7 @@
 <title>IRL — Setup Profile</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0D0810;--card:#160F1A;--rose:#E8437A;--rose2:#FF6B9D;--cream:#F5EDE8;--muted:#8A7A82;--muted2:#3A3040;--border:rgba(245,237,232,0.08);--green:#34D399}
@@ -34,26 +35,26 @@ input::placeholder,textarea::placeholder{color:var(--muted2)}
 input:focus,textarea:focus,select:focus{border-color:rgba(232,67,122,0.5)}
 select option{background:#160F1A;color:var(--cream)}
 textarea{resize:none;min-height:80px;line-height:1.5}
-.gender-row{display:flex;gap:10px}
-.gender-pill{flex:1;padding:14px;border:1.5px solid rgba(245,237,232,0.1);border-radius:13px;background:rgba(245,237,232,0.03);text-align:center;cursor:pointer;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--muted);transition:all 0.2s}
-.gender-pill.selected{border-color:var(--rose);background:rgba(232,67,122,0.1);color:var(--cream)}
+.gender-row{display:flex;gap:10px;margin-bottom:0}
+.gender-pill{flex:1;padding:16px;border:2px solid rgba(245,237,232,0.15);border-radius:13px;background:rgba(245,237,232,0.03);text-align:center;cursor:pointer;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--muted);-webkit-tap-highlight-color:transparent;user-select:none}
+.gender-pill.active{border-color:var(--rose) !important;background:rgba(232,67,122,0.15) !important;color:var(--cream) !important}
 .intent-row{display:flex;flex-direction:column;gap:10px}
-.intent-pill{padding:18px 20px;border:1.5px solid rgba(245,237,232,0.1);border-radius:14px;background:rgba(245,237,232,0.03);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:14px}
-.intent-pill.selected{border-color:var(--rose);background:rgba(232,67,122,0.08)}
+.intent-pill{padding:18px 20px;border:2px solid rgba(245,237,232,0.1);border-radius:14px;background:rgba(245,237,232,0.03);cursor:pointer;display:flex;align-items:center;gap:14px;-webkit-tap-highlight-color:transparent;user-select:none}
+.intent-pill.active{border-color:var(--rose) !important;background:rgba(232,67,122,0.08) !important}
 .intent-emoji{font-size:24px;flex-shrink:0}
 .intent-label{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--cream);margin-bottom:2px}
 .intent-desc{font-size:12px;color:var(--muted);font-weight:300}
 .q-pool{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
-.q-item{padding:16px 18px;border:1.5px solid rgba(245,237,232,0.1);border-radius:14px;background:rgba(245,237,232,0.03);cursor:pointer;transition:all 0.2s}
-.q-item.selected{border-color:var(--rose);background:rgba(232,67,122,0.08)}
+.q-item{padding:16px 18px;border:2px solid rgba(245,237,232,0.1);border-radius:14px;background:rgba(245,237,232,0.03);cursor:pointer}
+.q-item.active{border-color:var(--rose) !important;background:rgba(232,67,122,0.08) !important}
 .q-text{font-size:14px;color:var(--cream);line-height:1.5;margin-bottom:0}
-.q-item.selected .q-text{margin-bottom:12px}
-.q-answer{display:none;background:rgba(245,237,232,0.04);border:1px solid rgba(245,237,232,0.1);border-radius:10px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--cream);outline:none;width:100%;resize:none;transition:border-color 0.2s;min-height:60px;line-height:1.5}
-.q-item.selected .q-answer{display:block}
+.q-item.active .q-text{margin-bottom:12px}
+.q-answer{display:none;background:rgba(245,237,232,0.04);border:1px solid rgba(245,237,232,0.1);border-radius:10px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--cream);outline:none;width:100%;resize:none;min-height:60px;line-height:1.5}
+.q-item.active .q-answer{display:block}
 .q-answer:focus{border-color:rgba(232,67,122,0.4)}
 .q-counter{font-size:11px;color:var(--muted);margin-bottom:12px;letter-spacing:0.5px}
 .photo-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:8px}
-.photo-slot{aspect-ratio:3/4;border:1.5px dashed rgba(245,237,232,0.15);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;background:rgba(245,237,232,0.02);transition:all 0.2s}
+.photo-slot{aspect-ratio:3/4;border:1.5px dashed rgba(245,237,232,0.15);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;background:rgba(245,237,232,0.02)}
 .photo-slot.filled{border-style:solid;border-color:rgba(232,67,122,0.3)}
 .slot-icon{font-size:24px;margin-bottom:6px}
 .slot-label{font-size:10px;color:var(--muted);letter-spacing:0.5px;text-align:center;line-height:1.4}
@@ -65,11 +66,9 @@ input[type="file"]{display:none}
 .voice-box.recording{border-color:var(--rose);border-style:solid;background:rgba(232,67,122,0.05)}
 .voice-box.done{border-color:var(--green);border-style:solid;background:rgba(52,211,153,0.05)}
 .voice-prompt{background:rgba(232,67,122,0.08);border:1px solid rgba(232,67,122,0.2);border-radius:12px;padding:14px 16px;margin-bottom:24px;font-size:14px;color:var(--cream);line-height:1.6;font-style:italic;text-align:left}
-.voice-prompt::before{content:'"';color:var(--rose);font-size:20px;font-style:normal}
-.voice-prompt::after{content:'"';color:var(--rose);font-size:20px;font-style:normal}
 .voice-timer{font-family:'Syne',sans-serif;font-size:48px;font-weight:800;letter-spacing:-2px;color:var(--cream);margin-bottom:8px;line-height:1}
 .voice-status{font-size:13px;color:var(--muted);margin-bottom:24px}
-.voice-btn{width:72px;height:72px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;transition:transform 0.2s}
+.voice-btn{width:72px;height:72px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px}
 .voice-btn.idle{background:var(--rose);box-shadow:0 8px 24px rgba(232,67,122,0.4)}
 .voice-btn.recording{background:#C4306A;animation:sonar 1.5s infinite}
 .voice-btn.done{background:var(--green)}
@@ -79,16 +78,15 @@ input[type="file"]{display:none}
 .wave-bar:nth-child(1){animation-delay:0s;height:8px}.wave-bar:nth-child(2){animation-delay:0.1s;height:16px}.wave-bar:nth-child(3){animation-delay:0.2s;height:24px}.wave-bar:nth-child(4){animation-delay:0.3s;height:32px}.wave-bar:nth-child(5){animation-delay:0.4s;height:24px}.wave-bar:nth-child(6){animation-delay:0.5s;height:16px}.wave-bar:nth-child(7){animation-delay:0.6s;height:8px}
 @keyframes wave{0%,100%{transform:scaleY(0.5);opacity:0.5}50%{transform:scaleY(1);opacity:1}}
 .bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(13,8,16,0.95);backdrop-filter:blur(16px);padding:16px 24px;border-top:1px solid var(--border)}
-.btn-primary{width:100%;background:linear-gradient(135deg,#E8437A,#C4306A);border:none;border-radius:13px;padding:18px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:white;cursor:pointer;transition:transform 0.15s,opacity 0.15s;box-shadow:0 8px 28px rgba(232,67,122,0.25);min-height:56px;position:relative}
-.btn-primary:hover:not(:disabled){opacity:0.9}
-.btn-primary:disabled{opacity:0.4;cursor:not-allowed}
-.btn-label{display:block}
-.dots-loader{display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);gap:5px;align-items:center}
-.dots-loader span{display:inline-block;width:7px;height:7px;border-radius:50%;background:white;animation:dotbounce 1.2s infinite ease-in-out}
-.dots-loader span:nth-child(1){animation-delay:0s}.dots-loader span:nth-child(2){animation-delay:0.2s}.dots-loader span:nth-child(3){animation-delay:0.4s}
+.btn-next{width:100%;background:linear-gradient(135deg,#E8437A,#C4306A);border:none;border-radius:13px;padding:18px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:white;cursor:pointer;min-height:56px;position:relative;transition:opacity 0.2s}
+.btn-next:disabled{opacity:0.35;cursor:not-allowed}
+.btn-next-label{display:block}
+.btn-dots{display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);gap:5px;align-items:center}
+.btn-dots span{display:inline-block;width:7px;height:7px;border-radius:50%;background:white;animation:dotbounce 1.2s infinite ease-in-out}
+.btn-dots span:nth-child(1){animation-delay:0s}.btn-dots span:nth-child(2){animation-delay:0.2s}.btn-dots span:nth-child(3){animation-delay:0.4s}
 @keyframes dotbounce{0%,80%,100%{transform:scale(0.7);opacity:0.5}40%{transform:scale(1.1);opacity:1}}
-.btn-primary.loading .btn-label{opacity:0}
-.btn-primary.loading .dots-loader{display:flex}
+.btn-next.loading .btn-next-label{opacity:0}
+.btn-next.loading .btn-dots{display:flex}
 .error-msg{display:none;background:rgba(232,67,122,0.08);border:1px solid rgba(232,67,122,0.2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--rose2);margin-bottom:14px;text-align:center}
 .error-msg.show{display:block}
 @keyframes fadeup{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
@@ -102,7 +100,7 @@ input[type="file"]{display:none}
     <div class="logo" style="flex:1;text-align:center">ir<span>l</span></div>
     <div class="step-label" id="stepLabel">Step 1 of 5</div>
   </div>
-  <div class="progress-bar" id="progressBar">
+  <div class="progress-bar">
     <div class="prog-seg active" id="seg0"><div class="prog-seg-fill"></div></div>
     <div class="prog-seg" id="seg1"><div class="prog-seg-fill"></div></div>
     <div class="prog-seg" id="seg2"><div class="prog-seg-fill"></div></div>
@@ -111,18 +109,18 @@ input[type="file"]{display:none}
   </div>
 </div>
 
-<!-- STEP 1: Basics -->
+<!-- STEP 1 -->
 <div class="page active" id="page0">
   <span class="page-emoji">👋</span>
   <h1 class="page-title">Let's start with the basics.</h1>
   <p class="page-sub">Quick stuff first. Takes less than a minute.</p>
   <div class="field">
     <label class="field-label">Your name <span style="color:var(--muted2);font-size:10px;letter-spacing:0;text-transform:none;margin-left:4px">· from Google</span></label>
-    <input type="text" id="nameInput" placeholder="Your name" maxlength="40" readonly style="opacity:0.6;cursor:not-allowed;border-color:rgba(245,237,232,0.06)"/>
+    <input type="text" id="nameInput" placeholder="Your name" maxlength="40" readonly style="opacity:0.7;cursor:not-allowed"/>
   </div>
   <div class="field">
     <label class="field-label">Age</label>
-    <input type="text" id="ageInput" placeholder="Your age" maxlength="2" inputmode="numeric" pattern="[0-9]*"/>
+    <input type="tel" id="ageInput" placeholder="Your age" maxlength="2" inputmode="numeric"/>
   </div>
   <div class="field">
     <label class="field-label">Gender</label>
@@ -143,7 +141,7 @@ input[type="file"]{display:none}
   </div>
 </div>
 
-<!-- STEP 2: Intent -->
+<!-- STEP 2 -->
 <div class="page" id="page1">
   <span class="page-emoji">🎯</span>
   <h1 class="page-title">What are you here for?</h1>
@@ -155,7 +153,7 @@ input[type="file"]{display:none}
   </div>
 </div>
 
-<!-- STEP 3: Questions -->
+<!-- STEP 3 -->
 <div class="page" id="page2">
   <span class="page-emoji">💬</span>
   <h1 class="page-title">Show them who you are.</h1>
@@ -164,7 +162,7 @@ input[type="file"]{display:none}
   <div class="q-pool" id="qPool"></div>
 </div>
 
-<!-- STEP 4: Photos -->
+<!-- STEP 4 -->
 <div class="page" id="page3">
   <span class="page-emoji">📸</span>
   <h1 class="page-title">Put a face to the name.</h1>
@@ -180,7 +178,7 @@ input[type="file"]{display:none}
   <p class="photo-note">Only shown to verified IRL users. <b>Real photos only.</b></p>
 </div>
 
-<!-- STEP 5: Voice -->
+<!-- STEP 5 -->
 <div class="page" id="page4">
   <span class="page-emoji">🎙️</span>
   <h1 class="page-title">Let them hear you.</h1>
@@ -206,9 +204,9 @@ input[type="file"]{display:none}
 
 <div class="bottom-bar">
   <div class="error-msg" id="errorMsg"></div>
-  <button class="btn-primary" id="nextBtn" onclick="handleNext()">
-    <span class="btn-label" id="nextLabel">Continue →</span>
-    <div class="dots-loader"><span></span><span></span><span></span></div>
+  <button class="btn-next" id="nextBtn" onclick="handleNext()" disabled>
+    <span class="btn-next-label" id="nextLabel">Continue →</span>
+    <div class="btn-dots"><span></span><span></span><span></span></div>
   </button>
 </div>
 
@@ -216,30 +214,27 @@ input[type="file"]{display:none}
 const SUPABASE_URL = 'https://sxpbdkamagunvktdkogw.supabase.co';
 const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4cGJka2FtYWd1bnZrdGRrb2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDc3NDUsImV4cCI6MjA5NDU4Mzc0NX0.rTQeSH2dWSLP0IxwewvvEn3qxIbRQcCMZVjpr_0_LJ8';
 const EDGE = SUPABASE_URL + '/functions/v1';
-
-const { createClient } = window.supabase || {};
+const { createClient } = window.supabase;
 const db = createClient(SUPABASE_URL, ANON);
 
 async function callEdge(fn, body){
   const { data: { session } } = await db.auth.getSession();
   const token = session?.access_token;
   if(!token){ window.location.href='index.html'; return null; }
-  const res = await fetch(EDGE+'/'+fn, {
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-    body: JSON.stringify(body)
-  });
+  const res = await fetch(EDGE+'/'+fn, { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify(body) });
   return res.json();
 }
 
-let currentStep=0, selectedGender='', selectedIntent='';
-let photoFiles=[null,null,null];
-let mediaRecorder=null, audioChunks=[], audioBlob=null;
-let recordingTimer=null, secondsLeft=30, isRecording=false;
-let audioPlayer=null, playInterval=null;
-const TOTAL_STEPS=5;
-
-const QUESTIONS=[
+// STATE
+let currentStep = 0;
+let selectedGender = '';
+let selectedIntent = '';
+let photoFiles = [null, null, null];
+let mediaRecorder = null, audioChunks = [], audioBlob = null;
+let recordingTimer = null, secondsLeft = 30, isRecording = false;
+let audioPlayer = null, playInterval = null;
+const TOTAL_STEPS = 5;
+const QUESTIONS = [
   "What does your ideal Sunday look like?",
   "What are you actually looking for right now, honestly?",
   "One thing people get wrong about you.",
@@ -247,218 +242,271 @@ const QUESTIONS=[
   "What's something you're currently obsessed with?",
   "Describe yourself in three words — but make them interesting."
 ];
-let selectedQuestions={};
+let selectedQuestions = {};
 
+// INIT
 window.addEventListener('load', async () => {
   const { data: { session } } = await db.auth.getSession();
   if(!session){ window.location.href='index.html'; return; }
 
-  // use getUser for fresh data including LinkedIn identity
+  // fresh user data
   const { data: { user } } = await db.auth.getUser();
-  const meta = (user || session.user).user_metadata || {};
-
-  // try Google name first, then LinkedIn identity name
+  const u = user || session.user;
+  const meta = u.user_metadata || {};
   let name = meta.full_name || meta.name || '';
+
+  // fallback to identity data
   if(!name){
-    const identities = (user || session.user).identities || [];
-    const liIdentity = identities.find(i => i.provider === 'linkedin_oidc');
-    if(liIdentity) name = liIdentity.identity_data?.name || liIdentity.identity_data?.full_name || '';
-    const gIdentity = identities.find(i => i.provider === 'google');
-    if(!name && gIdentity) name = gIdentity.identity_data?.name || gIdentity.identity_data?.full_name || '';
+    const identities = u.identities || [];
+    for(const id of identities){
+      const n = id.identity_data?.full_name || id.identity_data?.name || '';
+      if(n){ name = n; break; }
+    }
   }
 
   document.getElementById('nameInput').value = name;
-  document.getElementById('ageInput').addEventListener('input',function(){ this.value=this.value.replace(/[^0-9]/g,'').slice(0,2); updateCTA(); });
-  document.getElementById('cityInput').addEventListener('change', updateCTA);
+  document.getElementById('ageInput').addEventListener('input', function(){ this.value=this.value.replace(/\D/g,'').slice(0,2); checkStep0(); });
+  document.getElementById('cityInput').addEventListener('change', checkStep0);
   buildQuestions();
   updateProgress(0);
   updateCTA();
 });
 
-function buildQuestions(){
-  const pool=document.getElementById('qPool'); pool.innerHTML='';
-  QUESTIONS.forEach((q,i)=>{
-    const div=document.createElement('div'); div.className='q-item'; div.id='qi'+i;
-    div.innerHTML=`<div class="q-text">${q}</div><textarea class="q-answer" id="qa${i}" placeholder="Your answer..." maxlength="150" onclick="event.stopPropagation()"></textarea>`;
-    div.addEventListener('click',()=>toggleQuestion(i));
-    div.querySelector('textarea').addEventListener('input',()=>{ selectedQuestions[i]=document.getElementById('qa'+i).value; });
-    pool.appendChild(div);
-  });
+// GENDER — uses onclick, class 'active' for styling
+function selectGender(g){
+  selectedGender = g;
+  document.getElementById('genderM').className = 'gender-pill' + (g==='male'?' active':'');
+  document.getElementById('genderF').className = 'gender-pill' + (g==='female'?' active':'');
+  checkStep0();
 }
 
-function toggleQuestion(i){
-  const item=document.getElementById('qi'+i); const isSel=item.classList.contains('selected'); const count=Object.keys(selectedQuestions).length;
-  if(isSel){ item.classList.remove('selected'); delete selectedQuestions[i]; }
-  else { if(count>=3){ showError('Pick 3 max.'); return; } item.classList.add('selected'); selectedQuestions[i]=''; setTimeout(()=>document.getElementById('qa'+i).focus(),100); }
-  hideError(); updateQCounter();
+// INTENT
+function selectIntent(i){
+  selectedIntent = i;
+  document.getElementById('intentS').className = 'intent-pill' + (i==='Serious'?' active':'');
+  document.getElementById('intentC').className = 'intent-pill' + (i==='Casual'?' active':'');
+  document.getElementById('intentO').className = 'intent-pill' + (i==='Open'?' active':'');
+  updateCTA();
+  setTimeout(()=>goToStep(currentStep+1), 400);
 }
-function updateQCounter(){ document.getElementById('qCounter').textContent=Object.keys(selectedQuestions).length+' of 3 selected'; updateCTA(); }
+
+// CTA LOGIC
+function checkStep0(){
+  updateCTA();
+}
 
 function updateCTA(){
   const btn = document.getElementById('nextBtn');
   if(!btn) return;
-  let enabled = false;
+  let ok = false;
   switch(currentStep){
     case 0:
-      const name = document.getElementById('nameInput')?.value.trim();
-      const age = parseInt(document.getElementById('ageInput')?.value);
-      const city = document.getElementById('cityInput')?.value;
-      enabled = !!(name && age>=18 && age<=45 && selectedGender && city);
+      const name = document.getElementById('nameInput')?.value?.trim() || '';
+      const age = parseInt(document.getElementById('ageInput')?.value || '0');
+      const city = document.getElementById('cityInput')?.value || '';
+      ok = name.length > 0 && age >= 18 && age <= 45 && selectedGender !== '' && city !== '';
       break;
-    case 1: enabled = !!selectedIntent; break;
+    case 1: ok = selectedIntent !== ''; break;
     case 2:
-      const keys = Object.keys(selectedQuestions);
-      enabled = keys.length===3 && keys.every(k=>document.getElementById('qa'+k)?.value.trim());
+      const ks = Object.keys(selectedQuestions);
+      ok = ks.length === 3 && ks.every(k => (selectedQuestions[k]||'').trim().length > 0);
       break;
-    case 3: enabled = !!photoFiles[0]; break;
-    case 4: enabled = !!audioBlob; break;
-    default: enabled = true;
+    case 3: ok = photoFiles[0] !== null; break;
+    case 4: ok = audioBlob !== null; break;
   }
-  btn.disabled = !enabled;
-  btn.style.opacity = enabled ? '1' : '0.4';
+  btn.disabled = !ok;
 }
-function selectGender(g){
-  selectedGender=g;
-  document.getElementById('genderM').classList.toggle('selected',g==='male');
-  document.getElementById('genderF').classList.toggle('selected',g==='female');
-  // force repaint for iOS
-  document.getElementById('genderM').style.opacity='0.99';
-  setTimeout(()=>{ document.getElementById('genderM').style.opacity=''; document.getElementById('genderF').style.opacity=''; },50);
-  hideError(); updateCTA();
-}
-function selectIntent(i){ selectedIntent=i; ['S','C','O'].forEach(x=>document.getElementById('intent'+x).classList.remove('selected')); document.getElementById('intent'+i[0]).classList.add('selected'); hideError(); setTimeout(()=>goToStep(currentStep+1),400); }
-function triggerUpload(i){ document.getElementById('fileInput'+i).click(); }
-function handlePhoto(i,input){
-  const file=input.files[0]; if(!file) return;
-  if(file.size>5*1024*1024){ showError('Photo must be under 5MB.'); return; }
-  photoFiles[i]=file;
-  document.getElementById('img'+i).src=URL.createObjectURL(file); document.getElementById('img'+i).style.display='block';
-  document.getElementById('rem'+i).style.display='flex'; document.getElementById('slot'+i).classList.add('filled'); hideError(); updateCTA();
-}
-function removePhoto(e,i){
-  e.stopPropagation(); photoFiles[i]=null; document.getElementById('img'+i).style.display='none'; document.getElementById('img'+i).src='';
-  document.getElementById('rem'+i).style.display='none'; document.getElementById('slot'+i).classList.remove('filled'); document.getElementById('fileInput'+i).value='';
-}
-async function toggleRecording(){ if(isRecording){ stopRecording(); return; } if(audioBlob) return; await startRecording(); }
-async function startRecording(){
-  try {
-    const stream=await navigator.mediaDevices.getUserMedia({audio:true}); mediaRecorder=new MediaRecorder(stream); audioChunks=[];
-    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
-    mediaRecorder.onstop=()=>{ audioBlob=new Blob(audioChunks,{type:'audio/webm'}); stream.getTracks().forEach(t=>t.stop()); showDoneState(); };
-    mediaRecorder.start(); isRecording=true; secondsLeft=30; updateTimer();
-    document.getElementById('voiceBox').classList.add('recording'); document.getElementById('voiceBtn').className='voice-btn recording'; document.getElementById('voiceBtn').textContent='⏹';
-    document.getElementById('voiceStatus').textContent='Recording... tap to stop'; document.getElementById('waveform').style.display='flex';
-    recordingTimer=setInterval(()=>{ secondsLeft--; updateTimer(); if(secondsLeft<=0) stopRecording(); },1000);
-  } catch(err){ showError('Microphone access denied.'); }
-}
-function stopRecording(){ clearInterval(recordingTimer); isRecording=false; if(mediaRecorder) mediaRecorder.stop(); document.getElementById('voiceBox').classList.remove('recording'); document.getElementById('waveform').style.display='none'; }
-function showDoneState(){
-  document.getElementById('voiceBox').classList.add('done'); document.getElementById('voiceBtn').className='voice-btn done'; document.getElementById('voiceBtn').textContent='✓';
-  document.getElementById('voiceStatus').textContent='Sounds good!'; document.getElementById('voiceTimer').style.color='var(--green)'; document.getElementById('playbackSection').style.display='block'; updateCTA();
-}
-function playVoice(){
-  if(!audioBlob) return; const btn=document.getElementById('playBtn');
-  if(audioPlayer&&!audioPlayer.paused){ audioPlayer.pause(); btn.textContent='▶'; clearInterval(playInterval); return; }
-  audioPlayer=new Audio(URL.createObjectURL(audioBlob)); audioPlayer.play(); btn.textContent='⏸';
-  playInterval=setInterval(()=>{ const pct=(audioPlayer.currentTime/(audioPlayer.duration||1))*100; document.getElementById('playProgress').style.width=pct+'%'; const s=Math.floor(audioPlayer.currentTime); document.getElementById('playTime').textContent='0:'+String(s).padStart(2,'0'); if(audioPlayer.ended){ btn.textContent='▶'; clearInterval(playInterval); document.getElementById('playProgress').style.width='0%'; } },100);
-}
-function resetRecording(){
-  audioBlob=null; audioChunks=[]; isRecording=false; secondsLeft=30; clearInterval(recordingTimer); if(audioPlayer){ audioPlayer.pause(); audioPlayer=null; } clearInterval(playInterval);
-  document.getElementById('voiceBox').className='voice-box'; document.getElementById('voiceBtn').className='voice-btn idle'; document.getElementById('voiceBtn').textContent='🎙️';
-  document.getElementById('voiceStatus').textContent='Tap to start recording'; document.getElementById('voiceTimer').textContent='0:30'; document.getElementById('voiceTimer').style.color='';
-  document.getElementById('waveform').style.display='none'; document.getElementById('playbackSection').style.display='none'; document.getElementById('playProgress').style.width='0%';
-}
-function updateTimer(){ const m=Math.floor(secondsLeft/60),s=secondsLeft%60; document.getElementById('voiceTimer').textContent=m+':'+String(s).padStart(2,'0'); }
 
-function updateProgress(step){
-  document.getElementById('stepLabel').textContent='Step '+(step+1)+' of '+TOTAL_STEPS;
-  for(let i=0;i<TOTAL_STEPS;i++){ const seg=document.getElementById('seg'+i); seg.className='prog-seg'; if(i<step) seg.classList.add('done'); else if(i===step) seg.classList.add('active'); }
-  document.getElementById('nextLabel').textContent=step===TOTAL_STEPS-1?'Submit Profile 🎉':'Continue →';
+// QUESTIONS
+function buildQuestions(){
+  const pool = document.getElementById('qPool');
+  pool.innerHTML = '';
+  QUESTIONS.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'q-item'; div.id = 'qi'+i;
+    div.innerHTML = `<div class="q-text">${q}</div><textarea class="q-answer" id="qa${i}" placeholder="Your answer..." maxlength="150" onclick="event.stopPropagation()"></textarea>`;
+    div.addEventListener('click', () => toggleQ(i));
+    const ta = div.querySelector('textarea');
+    ta.addEventListener('input', () => { selectedQuestions[i] = ta.value; updateCTA(); });
+    pool.appendChild(div);
+  });
 }
-function goBack(){ if(currentStep>0) goToStep(currentStep-1); }
-function goToStep(step){
-  document.getElementById('page'+currentStep).classList.remove('active'); currentStep=step;
-  document.getElementById('page'+currentStep).classList.add('active'); updateProgress(step); hideError(); window.scrollTo(0,0);
-  document.getElementById('backBtn').style.display=step>0?'block':'none';
+
+function toggleQ(i){
+  const item = document.getElementById('qi'+i);
+  const isSel = item.classList.contains('active');
+  const count = Object.keys(selectedQuestions).length;
+  if(isSel){
+    item.classList.remove('active');
+    delete selectedQuestions[i];
+  } else {
+    if(count >= 3){ showError('Pick 3 max.'); return; }
+    item.classList.add('active');
+    selectedQuestions[i] = '';
+    setTimeout(() => document.getElementById('qa'+i).focus(), 100);
+  }
+  hideError();
+  document.getElementById('qCounter').textContent = Object.keys(selectedQuestions).length + ' of 3 selected';
   updateCTA();
 }
 
-function validateStep(step){
-  switch(step){
-    case 0:
-      if(!document.getElementById('nameInput').value.trim()){ showError('Name is required.'); return false; }
-      const age=parseInt(document.getElementById('ageInput').value);
-      if(!age||age<18||age>45){ showError('Please enter a valid age between 18 and 45.'); return false; }
-      if(!selectedGender){ showError('Please select your gender.'); return false; }
-      if(!document.getElementById('cityInput').value){ showError('Please select your city.'); return false; }
-      return true;
-    case 1: if(!selectedIntent){ showError('Please pick what you\'re looking for.'); return false; } return true;
-    case 2:
-      const keys=Object.keys(selectedQuestions); if(keys.length<3){ showError('Please select and answer 3 questions.'); return false; }
-      if(keys.find(k=>!document.getElementById('qa'+k).value.trim())!==undefined){ showError('Please answer all 3 questions.'); return false; }
-      return true;
-    case 3: if(!photoFiles[0]){ showError('Please add at least one photo.'); return false; } return true;
-    case 4: if(!audioBlob){ showError('Please record your voice note.'); return false; } return true;
-  }
-  return true;
+// PHOTOS
+function triggerUpload(i){ document.getElementById('fileInput'+i).click(); }
+function handlePhoto(i, input){
+  const file = input.files[0]; if(!file) return;
+  if(file.size > 5*1024*1024){ showError('Photo must be under 5MB.'); return; }
+  photoFiles[i] = file;
+  document.getElementById('img'+i).src = URL.createObjectURL(file);
+  document.getElementById('img'+i).style.display = 'block';
+  document.getElementById('rem'+i).style.display = 'flex';
+  document.getElementById('slot'+i).classList.add('filled');
+  hideError(); updateCTA();
+}
+function removePhoto(e, i){
+  e.stopPropagation(); photoFiles[i] = null;
+  document.getElementById('img'+i).style.display = 'none';
+  document.getElementById('img'+i).src = '';
+  document.getElementById('rem'+i).style.display = 'none';
+  document.getElementById('slot'+i).classList.remove('filled');
+  document.getElementById('fileInput'+i).value = '';
+  updateCTA();
+}
+
+// VOICE
+async function toggleRecording(){ if(isRecording){ stopRecording(); return; } if(audioBlob) return; await startRecording(); }
+async function startRecording(){
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder = new MediaRecorder(stream); audioChunks = [];
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = () => {
+      audioBlob = new Blob(audioChunks, {type:'audio/webm'});
+      stream.getTracks().forEach(t=>t.stop());
+      document.getElementById('voiceBox').className = 'voice-box done';
+      document.getElementById('voiceBtn').className = 'voice-btn done';
+      document.getElementById('voiceBtn').textContent = '✓';
+      document.getElementById('voiceStatus').textContent = 'Sounds good!';
+      document.getElementById('voiceTimer').style.color = 'var(--green)';
+      document.getElementById('waveform').style.display = 'none';
+      document.getElementById('playbackSection').style.display = 'block';
+      updateCTA();
+    };
+    mediaRecorder.start(); isRecording = true; secondsLeft = 30;
+    document.getElementById('voiceBox').className = 'voice-box recording';
+    document.getElementById('voiceBtn').className = 'voice-btn recording';
+    document.getElementById('voiceBtn').textContent = '⏹';
+    document.getElementById('voiceStatus').textContent = 'Recording... tap to stop';
+    document.getElementById('waveform').style.display = 'flex';
+    updateTimer();
+    recordingTimer = setInterval(() => { secondsLeft--; updateTimer(); if(secondsLeft<=0) stopRecording(); }, 1000);
+  } catch(e){ showError('Microphone access denied.'); }
+}
+function stopRecording(){ clearInterval(recordingTimer); isRecording = false; if(mediaRecorder) mediaRecorder.stop(); }
+function playVoice(){
+  if(!audioBlob) return; const btn = document.getElementById('playBtn');
+  if(audioPlayer&&!audioPlayer.paused){ audioPlayer.pause(); btn.textContent='▶'; clearInterval(playInterval); return; }
+  audioPlayer = new Audio(URL.createObjectURL(audioBlob)); audioPlayer.play(); btn.textContent = '⏸';
+  playInterval = setInterval(() => { const pct=(audioPlayer.currentTime/(audioPlayer.duration||1))*100; document.getElementById('playProgress').style.width=pct+'%'; const s=Math.floor(audioPlayer.currentTime); document.getElementById('playTime').textContent='0:'+String(s).padStart(2,'0'); if(audioPlayer.ended){ btn.textContent='▶'; clearInterval(playInterval); } }, 100);
+}
+function resetRecording(){
+  audioBlob = null; audioChunks = []; isRecording = false; secondsLeft = 30; clearInterval(recordingTimer);
+  if(audioPlayer){ audioPlayer.pause(); audioPlayer = null; } clearInterval(playInterval);
+  document.getElementById('voiceBox').className = 'voice-box';
+  document.getElementById('voiceBtn').className = 'voice-btn idle'; document.getElementById('voiceBtn').textContent = '🎙️';
+  document.getElementById('voiceStatus').textContent = 'Tap to start recording'; document.getElementById('voiceTimer').textContent = '0:30'; document.getElementById('voiceTimer').style.color = '';
+  document.getElementById('waveform').style.display = 'none'; document.getElementById('playbackSection').style.display = 'none'; document.getElementById('playProgress').style.width = '0%';
+  updateCTA();
+}
+function updateTimer(){ const m=Math.floor(secondsLeft/60),s=secondsLeft%60; document.getElementById('voiceTimer').textContent=m+':'+String(s).padStart(2,'0'); }
+
+// NAVIGATION
+function updateProgress(step){
+  document.getElementById('stepLabel').textContent = 'Step '+(step+1)+' of '+TOTAL_STEPS;
+  for(let i=0;i<TOTAL_STEPS;i++){ const seg=document.getElementById('seg'+i); seg.className='prog-seg'; if(i<step) seg.classList.add('done'); else if(i===step) seg.classList.add('active'); }
+  document.getElementById('nextLabel').textContent = step===TOTAL_STEPS-1 ? 'Submit Profile 🎉' : 'Continue →';
+}
+function goBack(){ if(currentStep>0) goToStep(currentStep-1); }
+function goToStep(step){
+  document.getElementById('page'+currentStep).classList.remove('active');
+  currentStep = step;
+  document.getElementById('page'+currentStep).classList.add('active');
+  updateProgress(step); hideError(); window.scrollTo(0,0);
+  document.getElementById('backBtn').style.display = step>0 ? 'block' : 'none';
+  updateCTA();
 }
 
 async function handleNext(){
-  hideError(); if(!validateStep(currentStep)) return;
-  if(currentStep<TOTAL_STEPS-1){ goToStep(currentStep+1); return; }
+  hideError();
+  // validate
+  switch(currentStep){
+    case 0:
+      if(!document.getElementById('nameInput').value.trim()){ showError('Name required.'); return; }
+      const age = parseInt(document.getElementById('ageInput').value);
+      if(!age||age<18||age>45){ showError('Enter a valid age (18-45).'); return; }
+      if(!selectedGender){ showError('Please select your gender.'); return; }
+      if(!document.getElementById('cityInput').value){ showError('Please select your city.'); return; }
+      break;
+    case 1: if(!selectedIntent){ showError('Please select what you\'re looking for.'); return; } break;
+    case 2:
+      const ks = Object.keys(selectedQuestions);
+      if(ks.length<3){ showError('Please select and answer 3 questions.'); return; }
+      if(ks.some(k=>!(selectedQuestions[k]||'').trim())){ showError('Please answer all 3 questions.'); return; }
+      break;
+    case 3: if(!photoFiles[0]){ showError('Please add at least one photo.'); return; } break;
+    case 4: if(!audioBlob){ showError('Please record your voice note.'); return; } break;
+  }
+  if(currentStep < TOTAL_STEPS-1){ goToStep(currentStep+1); return; }
   await submitProfile();
 }
 
 async function submitProfile(){
-  const btn=document.getElementById('nextBtn'); btn.classList.add('loading'); btn.disabled=true;
+  const btn = document.getElementById('nextBtn');
+  btn.classList.add('loading'); btn.disabled = true;
   try {
     // 1 — basic profile
-    const profileRes = await callEdge('update-profile', {
-      type: 'basic',
-      updates: {
-        full_name: document.getElementById('nameInput').value.trim(),
-        age: parseInt(document.getElementById('ageInput').value),
-        gender: selectedGender,
-        city: document.getElementById('cityInput').value,
-        intent: selectedIntent,
-        onboarding_step: 2
-      }
-    });
-    if(!profileRes||profileRes.error) throw new Error(profileRes?.error||'Profile update failed');
+    const res1 = await callEdge('update-profile', { type:'basic', updates:{
+      full_name: document.getElementById('nameInput').value.trim(),
+      age: parseInt(document.getElementById('ageInput').value),
+      gender: selectedGender,
+      city: document.getElementById('cityInput').value,
+      intent: selectedIntent,
+      onboarding_step: 2
+    }});
+    if(!res1||res1.error) throw new Error(res1?.error||'Profile update failed');
 
-    // 2 — upload photos via signed URL
-    const photoUrls=[null,null,null];
+    // 2 — photos
+    const photoUrls = [null,null,null];
     for(let i=0;i<3;i++){
       if(!photoFiles[i]) continue;
-      const ext=photoFiles[i].name.split('.').pop();
-      const signedRes = await callEdge('upload-media',{ file_name:`photo${i+1}_${Date.now()}.${ext}`, file_type:photoFiles[i].type, media_type:'photo' });
-      if(!signedRes||signedRes.error) throw new Error('Photo upload error');
-      const uploadRes = await fetch(signedRes.signed_url,{ method:'PUT', headers:{'Content-Type':photoFiles[i].type,'x-upsert':'true'}, body:photoFiles[i] });
-      if(!uploadRes.ok) throw new Error('Photo upload failed');
-      photoUrls[i]=signedRes.public_url;
+      const ext = photoFiles[i].name.split('.').pop();
+      const sr = await callEdge('upload-media',{ file_name:`photo${i+1}_${Date.now()}.${ext}`, file_type:photoFiles[i].type, media_type:'photo' });
+      if(!sr||sr.error) throw new Error('Photo sign error');
+      const ur = await fetch(sr.signed_url,{ method:'PUT', headers:{'Content-Type':photoFiles[i].type,'x-upsert':'true'}, body:photoFiles[i] });
+      if(!ur.ok) throw new Error('Photo upload failed');
+      photoUrls[i] = sr.public_url;
     }
 
-    // 3 — upload voice
-    let voiceUrl=null;
+    // 3 — voice
+    let voiceUrl = null;
     if(audioBlob){
-      const signedRes = await callEdge('upload-media',{ file_name:`voice_${Date.now()}.webm`, file_type:'audio/webm', media_type:'voice' });
-      if(!signedRes||signedRes.error) throw new Error('Voice upload error');
-      const uploadRes = await fetch(signedRes.signed_url,{ method:'PUT', headers:{'Content-Type':'audio/webm','x-upsert':'true'}, body:audioBlob });
-      if(!uploadRes.ok) throw new Error('Voice upload failed');
-      voiceUrl=signedRes.public_url;
+      const sr = await callEdge('upload-media',{ file_name:`voice_${Date.now()}.webm`, file_type:'audio/webm', media_type:'voice' });
+      if(!sr||sr.error) throw new Error('Voice sign error');
+      const ur = await fetch(sr.signed_url,{ method:'PUT', headers:{'Content-Type':'audio/webm','x-upsert':'true'}, body:audioBlob });
+      if(!ur.ok) throw new Error('Voice upload failed');
+      voiceUrl = sr.public_url;
     }
 
     // 4 — save media
     await callEdge('update-profile',{ type:'media', updates:{ photo_1:photoUrls[0], photo_2:photoUrls[1], photo_3:photoUrls[2], voice_url:voiceUrl } });
 
-    // 5 — save answers
-    const answerRows=Object.keys(selectedQuestions).map(k=>({ question:QUESTIONS[parseInt(k)], answer:document.getElementById('qa'+k).value.trim() }));
-    await callEdge('update-profile',{ type:'answers', updates:answerRows });
+    // 5 — answers
+    const rows = Object.keys(selectedQuestions).map(k=>({ question:QUESTIONS[parseInt(k)], answer:(selectedQuestions[k]||'').trim() }));
+    await callEdge('update-profile',{ type:'answers', updates:rows });
 
-    window.location.href='pending.html';
+    window.location.href = 'pending.html';
   } catch(err){
     console.error(err); showError(err.message||'Something went wrong. Try again.');
-    btn.classList.remove('loading'); btn.disabled=false;
+    btn.classList.remove('loading'); btn.disabled = false; updateCTA();
   }
 }
 
