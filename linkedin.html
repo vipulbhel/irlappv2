@@ -160,11 +160,16 @@ window.addEventListener('load', async () => {
 
 // catch the redirect back from LinkedIn
 db.auth.onAuthStateChange(async (event, session) => {
-  if((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session){
+  console.log('linkedin page event:', event, session?.user?.identities?.map(i=>i.provider));
+  if((event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION') && session){
     const identities = session.user.identities || [];
     const linkedinIdentity = identities.find(i => i.provider === 'linkedin_oidc');
     if(linkedinIdentity){
       await handleLinkedInLinked(linkedinIdentity);
+    } else if(event === 'INITIAL_SESSION'){
+      // no linkedin yet — show the connect button
+      document.getElementById('pageLoader').style.display = 'none';
+      document.getElementById('mainCard').style.display = 'block';
     }
   }
 });
@@ -191,6 +196,27 @@ async function connectLinkedIn(){
 async function handleLinkedInLinked(linkedinIdentity){
   document.getElementById('pageLoader').style.display = 'none';
   document.getElementById('mainCard').style.display = 'block';
+
+  // check if this LinkedIn is already used by another user
+  const linkedinId = linkedinIdentity.identity_data?.sub || linkedinIdentity.id;
+  const { data: { session } } = await db.auth.getSession();
+  const currentUserId = session?.user?.id;
+
+  const res = await fetch('https://sxpbdkamagunvktdkogw.supabase.co/functions/v1/check-linkedin', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+    body: JSON.stringify({ linkedin_id: linkedinId })
+  });
+  const check = await res.json();
+
+  if(check.taken && check.user_id !== currentUserId){
+    showError('This LinkedIn is already linked to another IRL account. Please use a different LinkedIn.');
+    // unlink the identity
+    await db.auth.unlinkIdentity(linkedinIdentity);
+    document.getElementById('linkedinBtn').style.display = 'flex';
+    return;
+  }
+
   document.getElementById('linkedinBtn').style.display = 'none';
   document.getElementById('successBox').classList.add('show');
   document.getElementById('continueBtn').classList.add('show');
