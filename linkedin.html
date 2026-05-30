@@ -124,9 +124,27 @@ const db = createClient(SUPABASE_URL, ANON);
 let processed = false; // prevent double processing
 
 async function init(){
+  // check for OAuth error in URL first
+  const params = new URLSearchParams(window.location.search);
+  const hashParams = new URLSearchParams(window.location.hash.replace('#',''));
+  const errorCode = params.get('error') || hashParams.get('error');
+  const errorDesc = params.get('error_description') || hashParams.get('error_description');
+
+  if(errorCode){
+    console.log('OAuth error:', errorCode, errorDesc);
+    document.getElementById('pageLoader').style.display = 'none';
+    document.getElementById('mainCard').style.display = 'block';
+    if(errorDesc && errorDesc.toLowerCase().includes('already linked')){
+      showError('This LinkedIn account is already used by another IRL profile. Please use a different LinkedIn account.');
+    } else {
+      showError('LinkedIn connection failed. Please try again.');
+    }
+    return;
+  }
+
   try {
     // always refresh session first to get latest identities
-const { data: { session }, error } = await db.auth.getSession();
+    const { data: { session }, error } = await db.auth.getSession();
 console.log('linkedin page session:', !!session, 'error:', error);
 
 if(!session){ window.location.href = 'index.html'; return; }
