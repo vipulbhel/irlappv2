@@ -539,12 +539,14 @@ function switchTab(tab){
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('nav-'+tab).classList.add('active');
   if(tab==='profile'&&!profileLoaded){ profileLoaded=true; loadProfile(); }
-  if(tab==='chat'){
-    document.getElementById('chatListItems').innerHTML='';
+if(tab==='chat'){
+  // only reload if not already loaded
+  if(document.getElementById('chatListItems').innerHTML===''){
     document.getElementById('chatListLoading').style.display='flex';
     document.getElementById('chatListEmpty').style.display='none';
     loadChatList();
   }
+}
 }
 
 // ── MATCH
@@ -1025,6 +1027,7 @@ window.addEventListener('load', async ()=>{
   if(!session){ window.location.href='index.html'; return; }
   sessionUser = session.user;
   loadMatches();
+  loadChatList(); // preload chat list in background
 });
 </script>
 </body>
