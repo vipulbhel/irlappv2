@@ -199,6 +199,8 @@ async function connectLinkedIn(){
 
 async function handleLinkedInLinked(session, linkedinIdentity){
   console.log('LinkedIn identity found:', linkedinIdentity);
+  console.log('LinkedIn identity_data:', JSON.stringify(linkedinIdentity.identity_data));
+  console.log('LinkedIn identity id:', linkedinIdentity.id);
 
   // check if this LinkedIn is already linked to another account
   const linkedinSub = linkedinIdentity.identity_data?.sub || linkedinIdentity.id;
