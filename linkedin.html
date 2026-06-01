@@ -65,7 +65,10 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
 <div class="amb1"></div>
 
 <div class="page-loader" id="pageLoader">
-  <div class="page-loader-dots"><span></span><span></span><span></span></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+    <div class="page-loader-dots"><span></span><span></span><span></span></div>
+    <div id="loaderText" style="font-size:13px;color:var(--muted);font-family:'DM Sans',sans-serif"></div>
+  </div>
 </div>
 
 <div class="card" id="mainCard" style="display:none">
@@ -124,45 +127,14 @@ const db = createClient(SUPABASE_URL, ANON);
 let processed = false; // prevent double processing
 
 async function init(){
-  // check for OAuth error in URL first
-  const params = new URLSearchParams(window.location.search);
-  const hashParams = new URLSearchParams(window.location.hash.replace('#',''));
-  const errorCode = params.get('error') || hashParams.get('error');
-  const errorDesc = params.get('error_description') || hashParams.get('error_description');
-
- if(errorCode){
-    console.log('OAuth error:', errorCode, errorDesc);
-    // still populate user info before showing error
-    const { data: { session: errSession } } = await db.auth.getSession();
-    if(errSession){
-      const u = errSession.user;
-      const meta = u.user_metadata || {};
-      document.getElementById('googleName').textContent = meta.full_name || meta.name || '—';
-      document.getElementById('googleEmail').textContent = u.email || '—';
-      if(meta.avatar_url || meta.picture){
-        document.getElementById('googleAvatar').innerHTML = `<img src="${meta.avatar_url||meta.picture}"/>`;
-      }
-    }
-    document.getElementById('pageLoader').style.display = 'none';
-    document.getElementById('mainCard').style.display = 'block';
-    if(errorDesc && errorDesc.toLowerCase().includes('already linked')){
-      showError('This LinkedIn account is already used by another IRL profile. Please use a different LinkedIn account.');
-    } else {
-      showError('LinkedIn connection failed. Please try again.');
-    }
-    return;
-  }
-
   try {
     // always refresh session first to get latest identities
     const { data: { session }, error } = await db.auth.getSession();
-console.log('linkedin page session:', !!session, 'error:', error);
+    console.log('linkedin page session:', !!session, 'error:', error);
 
-if(!session){ window.location.href = 'index.html'; return; }
+    if(!session){ window.location.href = 'index.html'; return; }
 
-// getUser makes fresh network call — gets latest identities after LinkedIn link
-const { data: { user: freshUser } } = await db.auth.getUser();
-const user = freshUser || session.user;
+    const user = session.user;
     const meta = user.user_metadata || {};
 
     // populate Google user info
@@ -177,12 +149,13 @@ const user = freshUser || session.user;
     console.log('identities:', identities.map(i => i.provider));
     const linkedinIdentity = identities.find(i => i.provider === 'linkedin_oidc');
 
-    document.getElementById('pageLoader').style.display = 'none';
-    document.getElementById('mainCard').style.display = 'block';
-
     if(linkedinIdentity && !processed){
       processed = true;
+      // keep loader visible — handleLinkedInLinked will reveal card when done
       await handleLinkedInLinked(session, linkedinIdentity);
+    } else {
+      document.getElementById('pageLoader').style.display = 'none';
+      document.getElementById('mainCard').style.display = 'block';
     }
   } catch(e){
     console.error('init error:', e);
@@ -199,8 +172,7 @@ db.auth.onAuthStateChange(async (event, session) => {
     const linkedinIdentity = identities.find(i => i.provider === 'linkedin_oidc');
     if(linkedinIdentity){
       processed = true;
-      document.getElementById('pageLoader').style.display = 'none';
-      document.getElementById('mainCard').style.display = 'block';
+      // keep loader visible — handleLinkedInLinked reveals card when done
       await handleLinkedInLinked(session, linkedinIdentity);
     }
   }
@@ -228,50 +200,41 @@ async function connectLinkedIn(){
 
 async function handleLinkedInLinked(session, linkedinIdentity){
   console.log('LinkedIn identity found:', linkedinIdentity);
-  console.log('LinkedIn identity_data:', JSON.stringify(linkedinIdentity.identity_data));
-  console.log('LinkedIn identity id:', linkedinIdentity.id);
 
-  // check if this LinkedIn is already linked to another account
-  const linkedinSub = linkedinIdentity.identity_data?.sub || linkedinIdentity.id;
+  // show loading message while saving
+  const loaderText = document.getElementById('loaderText');
+  if(loaderText) loaderText.textContent = 'Verifying your LinkedIn...';
+
   const currentUserId = session.user.id;
 
   try {
-    // check via Supabase service role — look for another profile with same linkedin_id
     const checkRes = await fetch(EDGE + '/get-profile', {
       method: 'POST',
       headers: {'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
       body: JSON.stringify({})
     });
-    // We check the linkedin_id from the identity against existing profiles
-    // For now just save and move on — duplicate check can be added via Edge Function later
     const liName = linkedinIdentity.identity_data?.full_name || linkedinIdentity.identity_data?.name || '';
 
-    // save linkedin_verified to profile
-const updateRes = await fetch(EDGE + '/update-profile', {
-  method: 'POST',
-  headers: {'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
-  body: JSON.stringify({
-    type: 'basic',
-    updates: {
-      linkedin_verified: true,
-      linkedin_id: linkedinIdentity.identity_data?.sub || linkedinIdentity.id,
-      linkedin_url: linkedinIdentity.identity_data?.name || '',
-      onboarding_step: 1
-    }
-  })
-});
-const updateData = await updateRes.json();
-console.log('update-profile result:', updateData);
+    if(loaderText) loaderText.textContent = 'Saving verification...';
 
-// check for duplicate LinkedIn error
-if(updateData.error){
-  // unlink the LinkedIn identity since it's already in use
-  try { await db.auth.unlinkIdentity(linkedinIdentity); } catch(e){}
-  showError('This LinkedIn account is already linked to another IRL profile. Please use a different LinkedIn account.');
-  return;
-}
+    const updateRes = await fetch(EDGE + '/update-profile', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+      body: JSON.stringify({
+        type: 'basic',
+        updates: {
+          linkedin_verified: true,
+          linkedin_url: linkedinIdentity.identity_data?.sub || '',
+          onboarding_step: 1
+        }
+      })
+    });
+    const updateData = await updateRes.json();
+    console.log('update-profile result:', updateData);
 
-    // show success
+    // now reveal card with success state
+    document.getElementById('pageLoader').style.display = 'none';
+    document.getElementById('mainCard').style.display = 'block';
     document.getElementById('linkedinBtn').style.display = 'none';
     document.getElementById('successBox').classList.add('show');
     document.getElementById('continueBtn').classList.add('show');
@@ -280,6 +243,8 @@ if(updateData.error){
     }
   } catch(e){
     console.error('handleLinkedInLinked error:', e);
+    document.getElementById('pageLoader').style.display = 'none';
+    document.getElementById('mainCard').style.display = 'block';
     showError('Error saving LinkedIn. Try again.');
   }
 }
