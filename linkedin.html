@@ -65,10 +65,7 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;mi
 <div class="amb1"></div>
 
 <div class="page-loader" id="pageLoader">
-  <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
-    <div class="page-loader-dots"><span></span><span></span><span></span></div>
-    <div id="loaderText" style="font-size:13px;color:var(--muted);font-family:'DM Sans',sans-serif"></div>
-  </div>
+  <div class="page-loader-dots"><span></span><span></span><span></span></div>
 </div>
 
 <div class="card" id="mainCard" style="display:none">
@@ -149,13 +146,12 @@ async function init(){
     console.log('identities:', identities.map(i => i.provider));
     const linkedinIdentity = identities.find(i => i.provider === 'linkedin_oidc');
 
+    document.getElementById('pageLoader').style.display = 'none';
+    document.getElementById('mainCard').style.display = 'block';
+
     if(linkedinIdentity && !processed){
       processed = true;
-      // keep loader visible — handleLinkedInLinked will reveal card when done
       await handleLinkedInLinked(session, linkedinIdentity);
-    } else {
-      document.getElementById('pageLoader').style.display = 'none';
-      document.getElementById('mainCard').style.display = 'block';
     }
   } catch(e){
     console.error('init error:', e);
@@ -172,7 +168,8 @@ db.auth.onAuthStateChange(async (event, session) => {
     const linkedinIdentity = identities.find(i => i.provider === 'linkedin_oidc');
     if(linkedinIdentity){
       processed = true;
-      // keep loader visible — handleLinkedInLinked reveals card when done
+      document.getElementById('pageLoader').style.display = 'none';
+      document.getElementById('mainCard').style.display = 'block';
       await handleLinkedInLinked(session, linkedinIdentity);
     }
   }
@@ -201,22 +198,22 @@ async function connectLinkedIn(){
 async function handleLinkedInLinked(session, linkedinIdentity){
   console.log('LinkedIn identity found:', linkedinIdentity);
 
-  // show loading message while saving
-  const loaderText = document.getElementById('loaderText');
-  if(loaderText) loaderText.textContent = 'Verifying your LinkedIn...';
-
+  // check if this LinkedIn is already linked to another account
+  const linkedinSub = linkedinIdentity.identity_data?.sub || linkedinIdentity.id;
   const currentUserId = session.user.id;
 
   try {
+    // check via Supabase service role — look for another profile with same linkedin_id
     const checkRes = await fetch(EDGE + '/get-profile', {
       method: 'POST',
       headers: {'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
       body: JSON.stringify({})
     });
+    // We check the linkedin_id from the identity against existing profiles
+    // For now just save and move on — duplicate check can be added via Edge Function later
     const liName = linkedinIdentity.identity_data?.full_name || linkedinIdentity.identity_data?.name || '';
 
-    if(loaderText) loaderText.textContent = 'Saving verification...';
-
+    // save linkedin_verified to profile
     const updateRes = await fetch(EDGE + '/update-profile', {
       method: 'POST',
       headers: {'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
@@ -232,9 +229,7 @@ async function handleLinkedInLinked(session, linkedinIdentity){
     const updateData = await updateRes.json();
     console.log('update-profile result:', updateData);
 
-    // now reveal card with success state
-    document.getElementById('pageLoader').style.display = 'none';
-    document.getElementById('mainCard').style.display = 'block';
+    // show success
     document.getElementById('linkedinBtn').style.display = 'none';
     document.getElementById('successBox').classList.add('show');
     document.getElementById('continueBtn').classList.add('show');
@@ -243,8 +238,6 @@ async function handleLinkedInLinked(session, linkedinIdentity){
     }
   } catch(e){
     console.error('handleLinkedInLinked error:', e);
-    document.getElementById('pageLoader').style.display = 'none';
-    document.getElementById('mainCard').style.display = 'block';
     showError('Error saving LinkedIn. Try again.');
   }
 }
