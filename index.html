@@ -106,19 +106,40 @@ async function callEdge(fn, body){
 let sessionHandled = false;
 let waitingForOAuth = false;
 
-// native: listen for deep link BEFORE anything else
-if(isNative){
-  window.Capacitor.Plugins.App?.addListener('appUrlOpen', async (event) => {
+function setupNativeListeners(){
+  const App = window.Capacitor?.Plugins?.App;
+  const Browser = window.Capacitor?.Plugins?.Browser;
+  if(!App){ console.log('App plugin not found'); return; }
+
+  App.addListener('appUrlOpen', async (event) => {
     console.log('appUrlOpen:', event.url);
     if(sessionHandled) return;
     try {
-      await window.Capacitor.Plugins.Browser?.close();
-      const { data, error } = await db.auth.exchangeCodeForSession(event.url);
-      console.log('exchangeCode result:', data?.session?.user?.id, error?.message);
-      if(data?.session){
+      // close in-app browser
+      await Browser?.close().catch(()=>{});
+
+      // extract code from URL manually — most reliable approach
+      const codeMatch = event.url.match(/[?&]code=([^&#]+)/);
+      const code = codeMatch ? decodeURIComponent(codeMatch[1]) : null;
+      console.log('code found:', !!code);
+
+      if(code){
+        const { data, error } = await db.auth.exchangeCodeForSession(code);
+        console.log('exchange result:', !!data?.session, error?.message);
+        if(data?.session){
+          sessionHandled = true;
+          clearTimeout(safetyTimer);
+          await handleSession(data.session);
+          return;
+        }
+      }
+
+      // fallback — maybe session was set some other way
+      const { data: { session } } = await db.auth.getSession();
+      if(session){
         sessionHandled = true;
         clearTimeout(safetyTimer);
-        await handleSession(data.session);
+        await handleSession(session);
       } else {
         showLoginCard();
       }
@@ -128,46 +149,45 @@ if(isNative){
     }
   });
 
-  // fallback: when app comes to foreground after OAuth, check session
-  window.Capacitor.Plugins.App?.addListener('appStateChange', async (state) => {
+  // backup: when app comes to foreground after OAuth
+  App.addListener('appStateChange', async (state) => {
     if(!state.isActive || sessionHandled || !waitingForOAuth) return;
-    console.log('appStateChange active — checking session');
+    console.log('appStateChange — waiting for session...');
     setTimeout(async () => {
       if(sessionHandled) return;
       const { data: { session } } = await db.auth.getSession();
-      console.log('fallback getSession:', !!session);
+      console.log('fallback session:', !!session);
       if(session){
         sessionHandled = true;
         clearTimeout(safetyTimer);
         await handleSession(session);
       }
-    }, 1500);
+    }, 2000);
   });
 }
 
-// safety timeout — longer on native to allow deep link
+if(isNative) setupNativeListeners();
+
+// on native keep loader up until deep link fires — 60s timeout
+// on web show login card after 6s if no session
 const safetyTimer = setTimeout(()=>{
-  console.log('safety timeout');
-  if(!sessionHandled) showLoginCard();
-}, isNative ? 30000 : 6000);
+  if(!sessionHandled){ console.log('safety timeout'); showLoginCard(); }
+}, isNative ? 60000 : 6000);
 
 db.auth.onAuthStateChange(async (event, session) => {
-  console.log('auth event:', event, 'session:', !!session);
+  console.log('auth event:', event, session?.user?.id);
   if(event === 'INITIAL_SESSION'){
     if(session){
-      clearTimeout(safetyTimer);
       sessionHandled = true;
+      clearTimeout(safetyTimer);
       await handleSession(session);
     } else {
-      // on native don't show login card yet — wait for deep link
-      if(!isNative){
-        clearTimeout(safetyTimer);
-        showLoginCard();
-      }
+      if(!isNative){ clearTimeout(safetyTimer); showLoginCard(); }
+      // on native: stay on loader, wait for appUrlOpen
     }
   } else if(event === 'SIGNED_IN' && session && !sessionHandled){
-    clearTimeout(safetyTimer);
     sessionHandled = true;
+    clearTimeout(safetyTimer);
     await handleSession(session);
   }
 });
