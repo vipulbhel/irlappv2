@@ -124,6 +124,31 @@ const db = createClient(SUPABASE_URL, ANON);
 let processed = false; // prevent double processing
 
 async function init(){
+  // check for OAuth error in URL first (works for both web and deep link)
+  const params = new URLSearchParams(window.location.search);
+  const hashParams = new URLSearchParams(window.location.hash.replace('#',''));
+  const errorCode = params.get('error') || hashParams.get('error');
+  const errorDesc = params.get('error_description') || hashParams.get('error_description');
+
+  if(errorCode){
+    console.log('OAuth error:', errorCode, errorDesc);
+    const { data: { session: errSession } } = await db.auth.getSession();
+    if(errSession){
+      const u = errSession.user; const meta = u.user_metadata || {};
+      document.getElementById('googleName').textContent = meta.full_name || meta.name || '—';
+      document.getElementById('googleEmail').textContent = u.email || '—';
+      if(meta.avatar_url || meta.picture) document.getElementById('googleAvatar').innerHTML = `<img src="${meta.avatar_url||meta.picture}"/>`;
+    }
+    document.getElementById('pageLoader').style.display = 'none';
+    document.getElementById('mainCard').style.display = 'block';
+    if(errorDesc && errorDesc.toLowerCase().includes('already linked')){
+      showError('This LinkedIn account is already used by another IRL profile. Please use a different LinkedIn account.');
+    } else {
+      showError('LinkedIn connection failed. Please try again.');
+    }
+    return;
+  }
+
   try {
     // always refresh session first to get latest identities
     const { data: { session }, error } = await db.auth.getSession();
@@ -179,9 +204,13 @@ async function connectLinkedIn(){
   const btn = document.getElementById('linkedinBtn');
   btn.classList.add('loading'); btn.disabled = true;
   try {
+    const isNative = window.Capacitor?.isNativePlatform?.() || false;
+    const redirectTo = isNative
+      ? 'com.getirl.app://linkedin'
+      : 'https://irlv2-4r5m.vercel.app/linkedin.html';
     const { error } = await db.auth.linkIdentity({
       provider: 'linkedin_oidc',
-      options: { redirectTo: 'https://irlv2-4r5m.vercel.app/linkedin.html' }
+      options: { redirectTo }
     });
     if(error){
       console.error('linkIdentity error:', error);

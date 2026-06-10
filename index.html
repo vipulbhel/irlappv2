@@ -166,10 +166,14 @@ async function signInWithGoogle(){
   const btn = document.getElementById('googleBtn');
   btn.classList.add('loading'); btn.disabled = true;
   try {
+    const isNative = window.Capacitor?.isNativePlatform?.() || false;
+    const redirectTo = isNative
+      ? 'com.getirl.app://index'
+      : 'https://irlv2-4r5m.vercel.app/index.html';
     const { error } = await db.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://irlv2-4r5m.vercel.app/index.html',
+        redirectTo,
         queryParams: { access_type: 'offline', prompt: 'consent' }
       }
     });
