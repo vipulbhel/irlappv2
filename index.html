@@ -103,17 +103,20 @@ async function callEdge(fn, body){
   return res.json();
 }
 
+let sessionHandled = false;
+let waitingForOAuth = false;
+
 // native: listen for deep link BEFORE anything else
 if(isNative){
   window.Capacitor.Plugins.App?.addListener('appUrlOpen', async (event) => {
     console.log('appUrlOpen:', event.url);
+    if(sessionHandled) return;
     try {
-      // close the browser
       await window.Capacitor.Plugins.Browser?.close();
-      // exchange the code in the URL for a session
       const { data, error } = await db.auth.exchangeCodeForSession(event.url);
-      console.log('exchangeCodeForSession:', data?.session?.user?.id, error);
+      console.log('exchangeCode result:', data?.session?.user?.id, error?.message);
       if(data?.session){
+        sessionHandled = true;
         clearTimeout(safetyTimer);
         await handleSession(data.session);
       } else {
@@ -124,20 +127,47 @@ if(isNative){
       showLoginCard();
     }
   });
+
+  // fallback: when app comes to foreground after OAuth, check session
+  window.Capacitor.Plugins.App?.addListener('appStateChange', async (state) => {
+    if(!state.isActive || sessionHandled || !waitingForOAuth) return;
+    console.log('appStateChange active — checking session');
+    setTimeout(async () => {
+      if(sessionHandled) return;
+      const { data: { session } } = await db.auth.getSession();
+      console.log('fallback getSession:', !!session);
+      if(session){
+        sessionHandled = true;
+        clearTimeout(safetyTimer);
+        await handleSession(session);
+      }
+    }, 1500);
+  });
 }
 
-// safety timeout
-const safetyTimer = setTimeout(()=>{ console.log('safety timeout'); showLoginCard(); }, 6000);
+// safety timeout — longer on native to allow deep link
+const safetyTimer = setTimeout(()=>{
+  console.log('safety timeout');
+  if(!sessionHandled) showLoginCard();
+}, isNative ? 30000 : 6000);
 
-// web: use onAuthStateChange
 db.auth.onAuthStateChange(async (event, session) => {
   console.log('auth event:', event, 'session:', !!session);
   if(event === 'INITIAL_SESSION'){
+    if(session){
+      clearTimeout(safetyTimer);
+      sessionHandled = true;
+      await handleSession(session);
+    } else {
+      // on native don't show login card yet — wait for deep link
+      if(!isNative){
+        clearTimeout(safetyTimer);
+        showLoginCard();
+      }
+    }
+  } else if(event === 'SIGNED_IN' && session && !sessionHandled){
     clearTimeout(safetyTimer);
-    if(session){ await handleSession(session); }
-    else { showLoginCard(); }
-  } else if(event === 'SIGNED_IN' && session){
-    clearTimeout(safetyTimer);
+    sessionHandled = true;
     await handleSession(session);
   }
 });
@@ -183,7 +213,6 @@ async function signInWithGoogle(){
   btn.classList.add('loading'); btn.disabled = true;
   try {
     if(isNative){
-      // native: get OAuth URL, open in browser plugin
       const { data, error } = await db.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -193,6 +222,10 @@ async function signInWithGoogle(){
         }
       });
       if(error){ showError('Could not open Google.'); btn.classList.remove('loading'); btn.disabled = false; return; }
+      waitingForOAuth = true;
+      // keep loader visible while waiting for OAuth to complete
+      document.getElementById('pageLoader').style.display = 'flex';
+      document.getElementById('mainCard').style.display = 'none';
       await window.Capacitor.Plugins.Browser?.open({ url: data.url });
     } else {
       // web: normal redirect
