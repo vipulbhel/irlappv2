@@ -84,7 +84,13 @@ const { createClient } = window.supabase;
 const SUPABASE_URL = 'https://sxpbdkamagunvktdkogw.supabase.co';
 const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4cGJka2FtYWd1bnZrdGRrb2d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDc3NDUsImV4cCI6MjA5NDU4Mzc0NX0.rTQeSH2dWSLP0IxwewvvEn3qxIbRQcCMZVjpr_0_LJ8';
 const EDGE = SUPABASE_URL + '/functions/v1';
-const db = createClient(SUPABASE_URL, ANON);
+
+// use pkce flow for native deep link support
+const db = createClient(SUPABASE_URL, ANON, {
+  auth: { flowType: 'pkce' }
+});
+
+const isNative = !!(window.Capacitor?.isNativePlatform?.());
 
 async function callEdge(fn, body){
   const { data: { session } } = await db.auth.getSession();
@@ -97,33 +103,39 @@ async function callEdge(fn, body){
   return res.json();
 }
 
-// handle deep link callback from Google OAuth on native
-if(window.Capacitor?.isNativePlatform?.()){
-  window.addEventListener('load', () => {
-    window.Capacitor.Plugins.App?.addListener('appUrlOpen', async (data) => {
-      console.log('deep link received:', data.url);
-      if(data.url && data.url.startsWith('com.getirl.app://')){
-        const { data: { session } } = await db.auth.getSession();
-        if(session) await handleSession(session);
-        else showLoginCard();
+// native: listen for deep link BEFORE anything else
+if(isNative){
+  window.Capacitor.Plugins.App?.addListener('appUrlOpen', async (event) => {
+    console.log('appUrlOpen:', event.url);
+    try {
+      // close the browser
+      await window.Capacitor.Plugins.Browser?.close();
+      // exchange the code in the URL for a session
+      const { data, error } = await db.auth.exchangeCodeForSession(event.url);
+      console.log('exchangeCodeForSession:', data?.session?.user?.id, error);
+      if(data?.session){
+        clearTimeout(safetyTimer);
+        await handleSession(data.session);
+      } else {
+        showLoginCard();
       }
-    });
+    } catch(e){
+      console.error('appUrlOpen error:', e);
+      showLoginCard();
+    }
   });
 }
 
-// safety timeout — if nothing happens in 5 seconds show login card
-const safetyTimer = setTimeout(()=>{ console.log('safety timeout fired'); showLoginCard(); }, 5000);
+// safety timeout
+const safetyTimer = setTimeout(()=>{ console.log('safety timeout'); showLoginCard(); }, 6000);
 
+// web: use onAuthStateChange
 db.auth.onAuthStateChange(async (event, session) => {
   console.log('auth event:', event, 'session:', !!session);
-
   if(event === 'INITIAL_SESSION'){
     clearTimeout(safetyTimer);
-    if(session){
-      await handleSession(session);
-    } else {
-      showLoginCard();
-    }
+    if(session){ await handleSession(session); }
+    else { showLoginCard(); }
   } else if(event === 'SIGNED_IN' && session){
     clearTimeout(safetyTimer);
     await handleSession(session);
@@ -131,45 +143,35 @@ db.auth.onAuthStateChange(async (event, session) => {
 });
 
 async function handleSession(session){
-  console.log('handleSession called, user:', session.user?.id);
+  console.log('handleSession:', session.user?.id);
   try {
     const token = session.access_token;
-    console.log('calling get-profile...');
-    const res = await fetch('https://sxpbdkamagunvktdkogw.supabase.co/functions/v1/get-profile', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json', 'Authorization':'Bearer '+token},
-      body: JSON.stringify({})
+    const res = await fetch(EDGE+'/get-profile', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({})
     });
-    console.log('get-profile status:', res.status);
     const data = await res.json();
-    console.log('get-profile data:', data);
-
-    if(data.error){ console.error('get-profile error:', data.error); showLoginCard(); return; }
-
+    console.log('get-profile:', data);
+    if(data.error){ showLoginCard(); return; }
     if(!data.exists){
-      console.log('new user — creating profile...');
-      const res2 = await fetch('https://sxpbdkamagunvktdkogw.supabase.co/functions/v1/create-profile', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json', 'Authorization':'Bearer '+token},
-        body: JSON.stringify({})
+      const res2 = await fetch(EDGE+'/create-profile', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+        body:JSON.stringify({})
       });
       const created = await res2.json();
-      console.log('create-profile data:', created);
       if(created.error){ showError(created.error); showLoginCard(); return; }
       window.location.href = 'linkedin.html';
     } else {
       redirectByStatus(data.profile);
     }
-  } catch(e){
-    console.error('handleSession error:', e);
-    showLoginCard();
-  }
+  } catch(e){ console.error('handleSession error:', e); showLoginCard(); }
 }
 
 function redirectByStatus(profile){
-  console.log('redirectByStatus:', profile.status, 'step:', profile.onboarding_step, 'li:', profile.linkedin_verified);
   if(profile.status === 'approved'){ window.location.href = 'home.html'; return; }
-  if(profile.status === 'rejected'){ showError('Your profile was not approved. Email hello@getirl.in'); showLoginCard(); return; }
+  if(profile.status === 'rejected'){ showError('Not approved. Email hello@getirl.in'); showLoginCard(); return; }
   if(profile.review_reason === 'gender_change'){ window.location.href = 'pending.html'; return; }
   if(!profile.linkedin_verified){ window.location.href = 'linkedin.html'; return; }
   if(profile.onboarding_step < 2){ window.location.href = 'profile.html'; return; }
@@ -180,18 +182,29 @@ async function signInWithGoogle(){
   const btn = document.getElementById('googleBtn');
   btn.classList.add('loading'); btn.disabled = true;
   try {
-    const isNative = window.Capacitor?.isNativePlatform?.() || false;
-    const redirectTo = isNative
-      ? 'com.getirl.app://index'
-      : 'https://irlv2-4r5m.vercel.app/index.html';
-    const { error } = await db.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo,
-        queryParams: { access_type: 'offline', prompt: 'consent' }
-      }
-    });
-    if(error){ showError('Could not open Google. Try again.'); btn.classList.remove('loading'); btn.disabled = false; }
+    if(isNative){
+      // native: get OAuth URL, open in browser plugin
+      const { data, error } = await db.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'com.getirl.app://index',
+          skipBrowserRedirect: true,
+          queryParams: { access_type: 'offline', prompt: 'consent' }
+        }
+      });
+      if(error){ showError('Could not open Google.'); btn.classList.remove('loading'); btn.disabled = false; return; }
+      await window.Capacitor.Plugins.Browser?.open({ url: data.url });
+    } else {
+      // web: normal redirect
+      const { error } = await db.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'https://irlv2-4r5m.vercel.app/index.html',
+          queryParams: { access_type: 'offline', prompt: 'consent' }
+        }
+      });
+      if(error){ showError('Could not open Google.'); btn.classList.remove('loading'); btn.disabled = false; }
+    }
   } catch(e){ showError('Unexpected error.'); btn.classList.remove('loading'); btn.disabled = false; }
 }
 
