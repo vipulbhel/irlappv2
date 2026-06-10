@@ -168,12 +168,32 @@ function setupNativeListeners(){
 
 if(isNative) setupNativeListeners();
 
-// on native keep loader up until deep link fires — 60s timeout
-// on web show login card after 6s if no session
 const safetyTimer = setTimeout(()=>{
   if(!sessionHandled){ console.log('safety timeout'); showLoginCard(); }
-}, isNative ? 60000 : 6000);
+}, 8000);
 
+// primary: direct session check on load — works on both web and native
+document.addEventListener('DOMContentLoaded', async () => {
+  console.log('DOMContentLoaded — checking session');
+  try {
+    const { data: { session } } = await db.auth.getSession();
+    console.log('initial getSession:', !!session);
+    if(session && !sessionHandled){
+      sessionHandled = true;
+      clearTimeout(safetyTimer);
+      await handleSession(session);
+    } else if(!session){
+      clearTimeout(safetyTimer);
+      showLoginCard();
+    }
+  } catch(e){
+    console.error('DOMContentLoaded session check error:', e);
+    clearTimeout(safetyTimer);
+    showLoginCard();
+  }
+});
+
+// secondary: onAuthStateChange catches SIGNED_IN after OAuth
 db.auth.onAuthStateChange(async (event, session) => {
   console.log('auth event:', event, session?.user?.id);
   if(event === 'INITIAL_SESSION'){
@@ -182,8 +202,8 @@ db.auth.onAuthStateChange(async (event, session) => {
       clearTimeout(safetyTimer);
       await handleSession(session);
     } else {
-      if(!isNative){ clearTimeout(safetyTimer); showLoginCard(); }
-      // on native: stay on loader, wait for appUrlOpen
+      clearTimeout(safetyTimer);
+      showLoginCard(); // always show login card if no session
     }
   } else if(event === 'SIGNED_IN' && session && !sessionHandled){
     sessionHandled = true;
